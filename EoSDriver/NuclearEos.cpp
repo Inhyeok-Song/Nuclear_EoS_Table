@@ -96,12 +96,12 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
    
    if ( keymode == 0 )
    {
-      if ( log10(*xenr) > logeps[neps-1] )
+      if ( log10(*xenr + energy_shift) > logeps[neps-1] )
       {
          *keyerr = 103;
          return;
       }
-      if ( log10(*xenr) < logeps[0] )
+      if ( log10(*xenr + energy_shift) < logeps[0] )
       {
          *keyerr = 104;
          return;
@@ -110,7 +110,7 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
 
    // set up local vars
    double lr = log10(xrho);
-   double xeps = *xenr; //+ energy_shift;
+   double xeps = *xenr + energy_shift;
    double leps = log10(MAX(xeps, 1.0));
     
    // find energy if need be
@@ -124,7 +124,7 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       find_energy( lr, lt, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
                    logrho, logtemp_mode, yes, logeps, keymode, keyerr );
       if ( *keyerr != 0 ) return;
-      *xenr = pow(10.0, leps); // - energy_shift;
+      //*xenr = pow(10.0, leps) - energy_shift;
    }
    else if ( keymode == 2 )
    {
@@ -132,7 +132,7 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       find_energy( lr, entr, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
                    logrho, entr_mode, yes, logeps, keymode, keyerr );
       if ( *keyerr != 0 ) return;
-      *xenr = pow(10.0, leps); // - energy_shift;
+      //*xenr = pow(10.0, leps) - energy_shift;
    }
    else if ( keymode == 3 )
    {
@@ -140,7 +140,7 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       find_energy( lr, lprs, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
                    logrho, logprss_mode, yes, logeps, keymode, keyerr );
       if ( *keyerr != 0 ) return;
-      *xenr = pow(10.0, leps); // - energy_shift;
+      //*xenr = pow(10.0, leps) - energy_shift;
    }
 
    double res[5]; // result array
@@ -152,6 +152,8 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
    // cubic interpolation for other variables
    nuc_eos_C_cubinterp_some( lr, leps, xye, res, alltables,
                              nrho, neps, nye, 5, logrho, logeps, yes );
+   
+   if ( keymode != 0 ) *xenr = pow(10.0, leps) - energy_shift;
    
 
    // assign results

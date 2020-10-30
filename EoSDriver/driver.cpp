@@ -24,7 +24,6 @@ int main(void)
 {
    // Read the tabulate EoS
    nuc_eos_C_ReadTable( "../LS220_eps.h5" );
-  
    
    printf("nrho: %d\n", nrho);
    printf("neps: %d\n", neps);
@@ -32,7 +31,6 @@ int main(void)
  
    // testing
    nuc_eos_C_testing();
- 
  
    return 0;
 }

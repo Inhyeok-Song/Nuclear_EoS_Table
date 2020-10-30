@@ -63,7 +63,7 @@ void nuc_eos_C_short(double xrho, double *xtemp, double xye,
   // set up local vars
   double lr = log10(xrho);
   double lt = log10(*xtemp);
-  double xeps = *xenr; // + energy_shift;
+  double xeps = *xenr + energy_shift;
   double leps = log10(MAX(xeps, 1.0));
 
   // find temperature if need be
@@ -103,7 +103,7 @@ void nuc_eos_C_short(double xrho, double *xtemp, double xye,
 	// assign results
   if (keytemp != 0) {
   	// set up internal energy correctly, correcting for shift
-    *xenr = pow(10.0, res[1]); //- energy_shift;
+    *xenr = pow(10.0, res[1]) - energy_shift;
   }
 	if (keytemp != 2) {
   	// reset entropy
@@ -115,19 +115,19 @@ void nuc_eos_C_short(double xrho, double *xtemp, double xye,
     *xprs = pow(10.0, res[0]);
   }
 
-  *xmunu    = res[3];
-  *xcs2     = res[4];
-	*xmuhat		=	res[5];
-	*xmu_e		=	res[6];
-	*xmu_p		= res[7];
-	*xmu_n		=	res[8];
-	*xXa			=	res[9];
-	*xXh			=	res[10];
-	*xXn			= res[11];
-	*xXp			= res[12];
-	*xAbar		= res[13];
-	*xZbar		=	res[14];
-	*xgamma		= res[15];
+   *xmunu  = res[3];
+   *xcs2   = res[4];
+	*xmuhat = res[5];
+	*xmu_e  = res[6];
+	*xmu_p  = res[7];
+	*xmu_n  = res[8];
+	*xXa	  = res[9];
+	*xXh	  = res[10];
+	*xXn	  = res[11];
+	*xXp	  = res[12];
+	*xAbar  = res[13];
+	*xZbar  = res[14];
+	*xgamma = res[15];
 
   return;
 }

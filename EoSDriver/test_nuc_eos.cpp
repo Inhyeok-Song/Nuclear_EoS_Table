@@ -27,6 +27,7 @@ void nuc_eos_C_testing()
    double leps_range = lepsmax-lepsmin;
    double ye_range   = yemax-yemin;
    
+
    // output files for writing errors
    FILE *output_error[6];
 
@@ -87,7 +88,7 @@ void nuc_eos_C_testing()
       double rand_ye   = yemin   + ye_range   * rand3;
      
       xrho = pow(10.0, rand_lr);
-      xenr = pow(10.0, rand_leps);
+      xenr = pow(10.0, rand_leps) - energy_shift;
       xye  = rand_ye;
       
       double xlr       = rand_lr;
@@ -125,7 +126,7 @@ void nuc_eos_C_testing()
             {
                keymode = i_mode; // [1=temp, 2=entr, 3=prss] 
                keyerr  = 0;
-               xenr    = pow(10.0, savedleps);
+               xenr    = pow(10.0, savedleps) - energy_shift;
                double leps;
                double rel_err = 0.0;  
                // NuclearEos function
@@ -136,7 +137,7 @@ void nuc_eos_C_testing()
                                 logrho, logeps, yes,
                                 logtemp_mode, entr_mode, logprss_mode,
                                 keymode, &keyerr, rfeps );
-               leps    = log10(xenr);
+               leps    = log10(xenr+energy_shift);
                rel_err = fabs((leps-savedleps)/savedleps);
 
                if ( keyerr != 0 )

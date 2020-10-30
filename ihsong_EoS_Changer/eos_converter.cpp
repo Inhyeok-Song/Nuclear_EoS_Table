@@ -57,7 +57,7 @@ int ivs_short[16];
 int main(void) {
 	
   // Read the orginal table
-	nuc_eos_C_ReadTable("../LS220.h5");
+  nuc_eos_C_ReadTable("../LS220.h5");
   printf("nrho: %d\n", nrho);
   printf("ntemp: %d\n", ntemp);
   printf("nye: %d\n", nye);

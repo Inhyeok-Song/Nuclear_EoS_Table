@@ -132,7 +132,7 @@ void write_eos_table( char *nuceos_eps_table_name )
          {
             xtemp = 1.0;
             xrho  = pow(10.0, logrho2[k]);
-            xeps  = pow(10.0, logeps2[j]); // - energy_shift;
+            xeps  = pow(10.0, logeps2[j]) - energy_shift;
             xye   = yes2[i];
             nuc_eos_C_short( xrho, &xtemp, xye, &xeps, &xprs, &xent, &xcs2, &xmunu,
                              &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
@@ -198,7 +198,7 @@ void write_eos_table( char *nuceos_eps_table_name )
             if (keyerr == 0)
             {
                //eos_table_mode[i][j][k][0] = alltables[1 + 16*(k + nrho*(j + ntemp*i))];
-               eos_table_mode[i][j][k][0] = log10(xeps);
+               eos_table_mode[i][j][k][0] = log10(xeps + energy_shift);
             }
             else 
             {
@@ -226,7 +226,7 @@ void write_eos_table( char *nuceos_eps_table_name )
                              &xAbar, &xZbar, &xgamma, keytemp, &keyerr, prec );
             if (keyerr == 0)
             {
-               eos_table_mode[i][j][k][1] = log10(xeps); // + energy_shift);
+               eos_table_mode[i][j][k][1] = log10(xeps + energy_shift);
             }
             else 
             {
@@ -254,7 +254,7 @@ void write_eos_table( char *nuceos_eps_table_name )
                              &xAbar, &xZbar, &xgamma, keytemp, &keyerr, prec );
             if (keyerr == 0)
             {
-               eos_table_mode[i][j][k][2] = log10(xeps); // + energy_shift);
+               eos_table_mode[i][j][k][2] = log10(xeps + energy_shift);
             }
             else 
             {

@@ -82,7 +82,7 @@ void find_energy( double x, double y, double z, double *found_leps, double *allt
    iy = (int)( (y - yt[0] + 1.0e-10) * dyi );
    iz = (int)( (z - zt[0] + 1.0e-10) * dzi );
    
-   if ( ix < 0 || ix >= nx || iy < 0 || iy >= ny || iz < 0 || iz >= nz )
+   if ( ix < 0 || ix >= nx-1 || iy < 0 || iy >= ny-1 || iz < 0 || iz >= nz-1 )
    {
       *keyerr = 667; // out of range
       return;

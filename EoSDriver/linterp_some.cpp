@@ -123,7 +123,7 @@ void nuc_eos_C_linterp_some( double x, double y, double z,
                       + a[6] * dely * delz
                       + a[7] * delx * dely * delz;
    }
-
+   
 
    return;
 

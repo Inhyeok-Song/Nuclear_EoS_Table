@@ -82,12 +82,7 @@ void find_energy( double x, double y, double z, double *found_leps, double *allt
    iy = (int)( (y - yt[0] + 1.0e-10) * dyi );
    iz = (int)( (z - zt[0] + 1.0e-10) * dzi );
    
-   if ( ix < 0 || ix >= nx || iy < 0 || iy >= ny || iz < 0 || iz >= nz )
-   {
-      *keyerr = 667; // out of range
-      return;
-   }
-   
+    
    // linear interpolation at boundaries
    if ( ix == 0 || iy == 0 || iz == 0 ||
         ix == nx-2 || iy == ny-2 || iz == nz-2 )
@@ -292,7 +287,7 @@ void find_energy_bdry( double x, double y, double z, double *found_leps, double 
    
    if ( isnan(*found_leps) || !( *found_leps>logeps[0] && *found_leps<logeps[neps-1] ) )
    {
-      *keyerr = 667;
+      *keyerr = 668;
    }
 
 

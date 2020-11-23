@@ -20,7 +20,7 @@ void nuc_eos_C_testing()
    double lrhomin    = log10(pow(10.0, logrho[0])*1.02);
    double lrhomax    = log10(pow(10.0, logrho[nrho-1])*0.98);
    double lepsmin    = log10(1.02*1E17); //log10(pow(10.0,logeps[0])*1.02);
-   double lepsmax    = log10(0.98*1E21); //log10(pow(10.0,logeps[neps-1])*0.98);
+   double lepsmax    = log10(0.98*1E23); //log10(pow(10.0,logeps[neps-1])*0.98);
    double yemin      = yes[0]*1.02;
    double yemax      = yes[nye-1]*0.98;
    double lr_range   = lrhomax-lrhomin;
@@ -124,11 +124,14 @@ void nuc_eos_C_testing()
                                                                // (no temp, entr or prss)
             else
             {
-               keymode = i_mode; // [1=temp, 2=entr, 3=prss] 
+               keymode = i_mode; // [1=temp, 2=entr, 3=prss]
+               xtemp   = res[1];
+               xent    = res[2];
+               xprs    = res[3];
                keyerr  = 0;
-               xenr    = pow(10.0, savedleps) - energy_shift;
+               xenr    = 1.0;
                double leps;
-               double rel_err = 0.0;  
+               double rel_err = 0.0;
                // NuclearEos function
                nuc_eos_C_short( xrho, &xenr, xye, &xtemp, &xent, &xprs, 
                                 &xcs2, &xmunu, energy_shift,

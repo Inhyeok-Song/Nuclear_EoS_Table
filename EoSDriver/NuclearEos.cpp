@@ -108,6 +108,45 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       }
    }
 
+   if ( keymode == 1 )
+   {
+      if ( log10(*xtemp) > logtemp_mode[nmode-1] )
+      {
+         *keyerr = 107;
+         return;
+      }
+      if ( log10(*xtemp) < logtemp_mode[0] )
+      {
+         *keyerr = 108;
+         return;
+      }
+   }
+
+   if ( keymode == 2 )
+   {
+      if ( *xent > entr_mode[nmode-1] )
+      {
+         *keyerr = 109;
+         return;
+      if ( *xent < entr_mode[0] )
+         *keyerr = 110;
+         return;
+      }
+   }
+
+   if ( keymode == 3 )
+   {
+      if ( log10(*xprs) > logprss_mode[nmode-1] )
+      {
+         *keyerr = 111;
+         return;
+      if ( log10(*xprs) < logprss_mode[0] )
+         *keyerr = 112;
+         return;
+      }
+   }
+   
+
    // set up local vars
    double lr = log10(xrho);
    double xeps = *xenr + energy_shift;
@@ -124,7 +163,6 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       find_energy( lr, lt, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
                    logrho, logtemp_mode, yes, logeps, keymode, keyerr );
       if ( *keyerr != 0 ) return;
-      //*xenr = pow(10.0, leps) - energy_shift;
    }
    else if ( keymode == 2 )
    {
@@ -132,7 +170,6 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       find_energy( lr, entr, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
                    logrho, entr_mode, yes, logeps, keymode, keyerr );
       if ( *keyerr != 0 ) return;
-      //*xenr = pow(10.0, leps) - energy_shift;
    }
    else if ( keymode == 3 )
    {
@@ -140,7 +177,6 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
       find_energy( lr, lprs, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
                    logrho, logprss_mode, yes, logeps, keymode, keyerr );
       if ( *keyerr != 0 ) return;
-      //*xenr = pow(10.0, leps) - energy_shift;
    }
 
    double res[5]; // result array

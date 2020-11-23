@@ -71,10 +71,6 @@ void nuc_eos_C_cubinterp_some( double x, double y, double z,
    iy = (int)( ( y - yt[0] + 1.0e-10 ) * dyi );
    iz = (int)( ( z - zt[0] + 1.0e-10 ) * dzi );
    
-   if ( ix < 0 || ix >= nx || iy < 0 || iy >= ny || iz < 0 || iz >= nz )
-   {
-      return;
-   }
    
    // linear interpolation at boundaries
    if ( ix == 0 || iy == 0 || iz == 0 ||

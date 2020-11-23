@@ -30,7 +30,7 @@ void nuc_eos_C_linterp_some( double x, double y, double z,
    double d1, d2, d3;
    double fh[8][nvars], delx, dely, delz, a[8];
    double dx, dy, dz, dxi, dyi, dzi, dxyi, dxzi, dyzi, dxyzi;
-   int n, ix, iy, iz;
+   int    ix, iy, iz;
    
 
 // determine spacing parameters of equidistant (!!!) table

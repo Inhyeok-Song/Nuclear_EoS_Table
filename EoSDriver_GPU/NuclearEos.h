@@ -1,6 +1,7 @@
 //#ifndef __NUCLEAREOS_H__
 //#define __NUCLEAREOS_H__
 //#define DEBUG 1
+#define GPU_DEVICE __forceinline__ __device__
 
 #define npoints 1024*1024
 

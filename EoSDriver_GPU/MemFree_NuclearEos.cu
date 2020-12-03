@@ -5,7 +5,7 @@
 void MemFree_NuclearEoS() {
    
 
-   for (int t=0; t<NUC_TABLE_NPTR; t++)
+   for ( int t=0; t<NUC_TABLE_NPTR; t++ )
    {
       if ( d_EoS_Table[t] != NULL ) 
       {

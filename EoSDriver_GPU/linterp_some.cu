@@ -1,11 +1,11 @@
 #include "NuclearEos.h"
 //#include "NuclearEos.cuh"
 
-//__device__ static
-//void nuc_eos_C_linterp_some( double x, double y, double z,
-//                             double *output_vars, double *alltables,
-//                             int nx, int ny, int nz, int nvars,
-//                             double *xt, double *yt, double *zt );
+GPU_DEVICE static
+void nuc_eos_C_linterp_some( double x, double y, double z,
+                             double *output_vars, double *alltables,
+                             int nx, int ny, int nz, int nvars,
+                             double *xt, double *yt, double *zt );
 
 
 //-------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@
 //                yt          : vector of y-coordinates of table
 //                zt          : vector of z-coordinates of table
 //-------------------------------------------------------------------------------------
-__device__ inline
+GPU_DEVICE
 void nuc_eos_C_linterp_some( double x, double y, double z,
                              double *output_vars, double *alltables,
                              int nx, int ny, int nz, int nvars,

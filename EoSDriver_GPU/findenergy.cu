@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include "NuclearEos.h"
 #include "NuclearEos.cuh"
 
 
-//__device__ static
-//void find_energy( double x, double y, double z, double *found_leps, double *alltables_mode,
-//                  int nx, int ny, int nz, int neps, double *xt, double *yt, double *zt, double *logeps,
-//                  int keymode, int *keyerr );
-//
-__device__ static
+GPU_DEVICE static
+void find_energy( double x, double y, double z, double *found_leps, double *alltables_mode,
+                  int nx, int ny, int nz, int neps, double *xt, double *yt, double *zt, double *logeps,
+                  int keymode, int *keyerr );
+
+GPU_DEVICE static
 void find_energy_bdry( double x, double y, double z, double *found_leps, double *alltables_mode,
                        int nx, int ny, int nz, int neps, double *xt, double *yt, double *zt, double *logeps,
                        int keymode, int *keyerr );
@@ -43,7 +44,7 @@ void find_energy_bdry( double x, double y, double z, double *found_leps, double 
 //                                 3: pressure mode    (coming in with P)
 //                keyerr         : output error
 //-------------------------------------------------------------------------------------
-__device__ inline
+GPU_DEVICE
 void find_energy( double x, double y, double z, double *found_leps, double *alltables_mode,
                   int nx, int ny, int nz, int neps, double *xt, double *yt, double *zt, double *logeps,
                   int keymode, int *keyerr )
@@ -88,12 +89,6 @@ void find_energy( double x, double y, double z, double *found_leps, double *allt
    ix = (int)( (x - xt[0] + 1.0e-10) * dxi );
    iy = (int)( (y - yt[0] + 1.0e-10) * dyi );
    iz = (int)( (z - zt[0] + 1.0e-10) * dzi );
-   
-   if ( ix < 0 || ix >= nx-1 || iy < 0 || iy >= ny-1 || iz < 0 || iz >= nz-1 )
-   {
-      *keyerr = 667; // out of range
-      return;
-   }
    
    // linear interpolation at boundaries
    if ( ix == 0 || iy == 0 || iz == 0 ||
@@ -194,7 +189,7 @@ void find_energy( double x, double y, double z, double *found_leps, double *allt
 //                                 3: pressure mode    (coming in with P)
 //                keyerr         : output error
 //-------------------------------------------------------------------------------------
-__device__
+GPU_DEVICE
 void find_energy_bdry( double x, double y, double z, double *found_leps, double *alltables_mode,
                        int nx, int ny, int nz, int neps, double *xt, double *yt, double *zt, double *logeps,
                        int keymode, int *keyerr )

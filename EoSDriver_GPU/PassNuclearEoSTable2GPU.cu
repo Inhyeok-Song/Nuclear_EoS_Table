@@ -18,7 +18,7 @@ void PassNuclearEoSTable2GPU() {
 
    for( int t=0; t<NUC_TABLE_NPTR; t++ )
    {
-      CUDA_CHECK_ERROR( cudaMalloc( (void**) &d_EoS_Table[t], EoS_TableSize[t] ) );
+      CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_EoS_Table[t], EoS_TableSize[t] ) );
       CUDA_CHECK_ERROR( cudaMemcpy( d_EoS_Table[t], h_EoS_Table[t], EoS_TableSize[t], cudaMemcpyHostToDevice ) );
    }
  
@@ -34,6 +34,6 @@ void PassNuclearEoSTable2GPU() {
    CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_nye, sizeof(int) ) );
    CUDA_CHECK_ERROR( cudaMemcpy( d_nye, &g_nye, sizeof(int), cudaMemcpyHostToDevice ) );
    
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)d_nmode, sizeof(int) ) );
+   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_nmode, sizeof(int) ) );
    CUDA_CHECK_ERROR( cudaMemcpy( d_nmode, &g_nmode, sizeof(int), cudaMemcpyHostToDevice ) );
 }

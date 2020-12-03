@@ -6,17 +6,6 @@
 #include "cubinterp_some.cu"
 
 
-//__device__ static
-//void nuc_eos_C_short( double xrho, double *xenr, double xye,
-//                      double *xtemp, double *xent, double *xprs,
-//                      double *xcs2, double *xmunu, double energy_shift,
-//                      int nrho, int neps, int nye, int nmode,
-//                      double *alltables, double *alltables_mode,
-//                      double *logrho, double *logeps, double *yes,
-//                      double *logtemp_mode, double *entr_mode, double *logprss_mode,
-//                      int keymode, int *keyerr, double rfeps );
-
-
 //-----------------------------------------------------------------------------------------------
 // Function    :  nuc_eos_C_short
 // Description :  Function to find thermodynamic varibles by searching
@@ -74,7 +63,7 @@
 //                                  106 : rho too low
 //                rfeps           : tolerence for interpolations
 //-----------------------------------------------------------------------------------------------
-__device__ inline
+GPU_DEVICE
 void nuc_eos_C_short( double xrho, double *xenr, double xye,
                       double *xtemp, double *xent, double *xprs,
                       double *xcs2, double *xmunu, double energy_shift,
@@ -82,81 +71,82 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
                       double *alltables, double *alltables_mode,
                       double *logrho, double *logeps, double *yes,
                       double *logtemp_mode, double *entr_mode, double *logprss_mode,
-                      int keymode, int *keyerr, double rfeps )
+                      int keymode, int *keyerr, const double rfeps )
 {
-   printf("sdf");
-   *keyerr = 0;
-   // check whether (rho, eps, Y_e) is within the table
-   if ( log10(xrho) > logrho[nrho-1] )
-   {
-      *keyerr = 105;
-      return;
-   }
-   if ( log10(xrho) < logrho[0] )
-   {
-      *keyerr = 106;
-      return;
-   }
-   if ( xye > yes[nye-1] )
-   {
-      *keyerr = 101;
-      return;
-   }
-   if ( xye < yes[0] )
-   {
-      *keyerr = 102;
-      return;
-   }
-   
-   if ( keymode == 0 )
-   {
-      if ( log10(*xenr) > logeps[neps-1] )
-      {
-         *keyerr = 103;
-         return;
-      }
-      if ( log10(*xenr) < logeps[0] )
-      {
-         *keyerr = 104;
-         return;
-      }
-   }
 
-   
-   // set up local vars
    double lr = log10(xrho);
+   *keyerr = 0;
+   
+   // check whether eps and Y_e is within the table
+   if ( log10(xrho) > logrho[nrho-1] )     { *keyerr = 105; return; }
+   if ( log10(xrho) < logrho[0] )          { *keyerr = 106; return; }
+   if ( xye > yes[nye-1] )                 { *keyerr = 101; return; }
+   if ( xye < yes[0] )                     { *keyerr = 102; return; }
+   
+
+   // set up local vars
    double xeps = *xenr + energy_shift;
-   double leps = log10(MAX(xeps, 1.0));
+
     
    // find energy if need be
    // ( keymode = 0: energy mode      )
    // ( keymode = 1: temperature mode )
    // ( keymode = 2: entropy mode     )
    // ( keymode = 3  pressure mode    )
-   if ( keymode == 1 )
+   double leps = NULL;
+   
+   switch ( keymode )
    {
-      double lt = log10(*xtemp);
-      find_energy( lr, lt, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
-                   logrho, logtemp_mode, yes, logeps, keymode, keyerr );
-      if ( *keyerr != 0 ) return;
-      *xenr = pow(10.0, leps) - energy_shift;
-   }
-   else if ( keymode == 2 )
-   {
-      double entr = *xent;
-      find_energy( lr, entr, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
-                   logrho, entr_mode, yes, logeps, keymode, keyerr );
-      if ( *keyerr != 0 ) return;
-      *xenr = pow(10.0, leps) - energy_shift;
-   }
-   else if ( keymode == 3 )
-   {
-      double lprs = log10(*xprs);
-      find_energy( lr, lprs, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
-                   logrho, logprss_mode, yes, logeps, keymode, keyerr );
-      if ( *keyerr != 0 ) return;
-      *xenr = pow(10.0, leps) - energy_shift;
-   }
+      case NUC_MODE_ENGY :
+      {
+         double leps = log10(MAX(xeps, 1.0));
+         if ( log10(*xenr) > logeps[neps-1] ) { *keyerr = 103; return; }
+         if ( log10(*xenr) < logeps[0] )      { *keyerr = 104; return; }
+      }
+      break;
+
+      case NUC_MODE_TEMP :   
+      {
+         double lt = log10(*xtemp);
+
+         if ( lt > logtemp_mode[nmode-1] )   {  *keyerr = 107;  return;  }
+         if ( lt < logtemp_mode[      0] )   {  *keyerr = 108;  return;  }
+
+         find_energy( lr, lt, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
+                      logrho, logtemp_mode, yes, logeps, keymode, keyerr );
+         
+         if ( *keyerr != 0 ) return;
+      }
+      break;
+
+      case NUC_MODE_ENTR :
+      {
+         double entr = *xent;
+
+         if ( entr > entr_mode[nmode-1] )    {  *keyerr = 109;  return;  }
+         if ( entr < entr_mode[      0] )    {  *keyerr = 110;  return;  }
+         
+         find_energy( lr, entr, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
+                      logrho, entr_mode, yes, logeps, keymode, keyerr );
+         
+         if ( *keyerr != 0 ) return;
+      }
+      break;
+
+      case NUC_MODE_PRES :
+      {
+         double lprs = log10(*xprs);
+         
+         if ( lprs > logprss_mode[nmode-1] ) {  *keyerr = 111;  return;  }
+         if ( lprs < logprss_mode[      0] ) {  *keyerr = 112;  return;  }
+         
+         find_energy( lr, lprs, xye, &leps, alltables_mode, nrho, nmode, nye, neps,
+                      logrho, logprss_mode, yes, logeps, keymode, keyerr );
+         
+         if ( *keyerr != 0 ) return;
+      }
+      break;
+   } // switch ( keymode )
 
    double res[5]; // result array
 
@@ -167,6 +157,8 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
    // cubic interpolation for other variables
    nuc_eos_C_cubinterp_some( lr, leps, xye, res, alltables,
                              nrho, neps, nye, 5, logrho, logeps, yes );
+   
+   if ( keymode != NUC_MODE_ENGY ) *xenr = pow( 10.0, leps ) - energy_shift;
    
 
    // assign results

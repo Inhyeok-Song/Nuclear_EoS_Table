@@ -15,13 +15,14 @@ void PassRandPoints2GPU() {
    Pick_Rand_Points();
 
 
-   unsigned long Rand_Size = sizeof(double)*NUC_TABLE_NPTR*npoints;
+   long Rand_Size = sizeof(double)*NUC_TABLE_NPTR*npoints;
       
 
    CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_Rand_Vars, Rand_Size ) );
    CUDA_CHECK_ERROR( cudaMemcpy( d_Rand_Vars, Rand_Vars, Rand_Size, cudaMemcpyHostToDevice ) );
 
    free(Rand_Vars);
+   Rand_Vars = NULL;
 
 } //FUNCTION : PassRandPoints2GPU
 
@@ -43,10 +44,10 @@ void Pick_Rand_Points()
    double lprssmin    = log10(pow(10.0, 1.02 * 37.84367789977789));
    double lprss_range = lprssmax - lprssmin;
 
-   unsigned long Rand_Size = sizeof(double)*NUC_TABLE_NPTR*npoints;
+   long Rand_Size = sizeof(double)*NUC_TABLE_NPTR*npoints;
    Rand_Vars = (double*)malloc( Rand_Size );
 
-   for (int i=0; i<npoints; i++) {
+   for ( int i=0; i<npoints; i++ ) {
       // set random points (rho, eps, Ye) 
       double rand1 = rand() / (double)RAND_MAX; 
       double rand2 = rand() / (double)RAND_MAX;

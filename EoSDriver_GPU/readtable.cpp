@@ -201,10 +201,10 @@ void nuc_eos_C_ReadTable( char *nuceos_table_name )
       fprintf(stderr, "Cannot allocate memory for EOS table\n");
       abort();
    }
-   for(int iv=0; iv<3; iv++) 
-      for(int k=0; k<g_nye; k++) 
-         for(int j=0; j<g_nmode; j++)
-   for(int i = 0; i < g_nrho ; i++)
+   for ( int iv=0; iv<3; iv++ ) 
+      for ( int k=0; k<g_nye; k++ ) 
+         for ( int j=0; j<g_nmode; j++ )
+   for ( int i=0; i<g_nrho ; i++ )
    {
       int indold = i + g_nrho*(j + g_nmode*(k + g_nye*iv));
       int indnew = iv + 3*(i + g_nrho*(j + g_nmode*k));

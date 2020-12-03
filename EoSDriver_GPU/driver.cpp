@@ -23,7 +23,7 @@ double *g_entr_mode;
 double EoS_AuxArray_Flt[EOS_NAUX_MAX];
 double EoS_AuxArray_Int[EOS_NAUX_MAX];
 
-double *h_EoS_Table[EOS_NTABLE_MAX];
+double *h_EoS_Table[EOS_NTABLE_MAX] = {NULL};
 
 //GPU variables
 int    *d_nrho         = NULL;

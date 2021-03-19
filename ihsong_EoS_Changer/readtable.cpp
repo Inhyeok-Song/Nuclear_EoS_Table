@@ -129,6 +129,10 @@ void nuc_eos_C_ReadTable( char* nuceos_table_name )
    // Gamma
    READ_EOSTABLE_HDF5("gamma",    15);
 
+   READ_EOSTABLE_HDF5("dedt",     16);
+   READ_EOSTABLE_HDF5("dpderho",  17);
+   READ_EOSTABLE_HDF5("dpdrhoe",  18);
+
    // Read additional tables and variables
    READ_EOS_HDF5("logrho",       logrho,        H5T_NATIVE_DOUBLE, H5S_ALL);
    READ_EOS_HDF5("logtemp",      logtemp,       H5T_NATIVE_DOUBLE, H5S_ALL);
@@ -182,7 +186,7 @@ void nuc_eos_C_ReadTable( char* nuceos_table_name )
 
 
    //set up index vectors for interpolations
-   for (int i=0;i<16;i++) ivs_short[i] = i;
+   for (int i=0;i<19;i++) ivs_short[i] = i;
 
 
 }

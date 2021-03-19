@@ -128,7 +128,5 @@ void cubinterp_find(int ix, int iz, double xrho, double xye, double f_in, double
                   + fv[1];
  
 
- 
-  
   return;
 }

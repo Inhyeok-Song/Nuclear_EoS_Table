@@ -1,6 +1,6 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
-#define NTABLES 16
+#define NTABLES 19
 //#define DEBUG 1
 
 extern int nrho;
@@ -52,6 +52,7 @@ extern double xmunu, xmuhat, xmu_e, xmu_p, xmu_n;
 extern double xXa, xXh, xXn, xXp;
 extern double xAbar, xZbar;
 extern double xgamma;
+extern double dpde;
 
 
 // table key
@@ -74,7 +75,7 @@ extern double xgamma;
 
 // some vectors for selecting variables for more
 // efficient interpolation
-extern int ivs_short[16];
+extern int ivs_short[19];
 
 // frontend function declarations
 void nuc_eos_C_short(double xrho, double *xtemp, double xye,
@@ -83,7 +84,7 @@ void nuc_eos_C_short(double xrho, double *xtemp, double xye,
          double *xmu_e, double *xmu_p, double *xmu_n,
          double *xXa, double *xXh, double *xXn,
 	       double *xXp, double *xAbar, double *xZbar,
-	       double *xgamma, int keytemp, int *keyerr,
+	       double *xgamma, double *dpde, int keytemp, int *keyerr,
 		     double rfeps); 
 
 // core function declarations

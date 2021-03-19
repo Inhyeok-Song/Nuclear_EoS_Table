@@ -8,7 +8,6 @@ void nuc_eos_C_linterp_for_prs(double x, double y, double z,
 				int nx, int ny, int nz, 
 				double* xt,double*yt, double* zt, 
 				double* dlepsdlt)
-
 {
 
 //!
@@ -27,7 +26,7 @@ void nuc_eos_C_linterp_for_prs(double x, double y, double z,
 //!     nx       x-dimension of table
 //!     ny       y-dimension of table
 //!     nz       z-dimension of table
-//!     xt       vector of x-coordinates of table
+//!     xt       vector of x-coordnates of table
 //!     yt       vector of y-coordinates of table
 //!     zt       vector of z-coordinates of table
 //!
@@ -112,14 +111,13 @@ void nuc_eos_C_linterp_for_prs(double x, double y, double z,
   *dlepsdlt = -a[2];
 
   *f = a[0] + a[1] * delx
-    + a[2] * dely
-    + a[3] * delz
-    + a[4] * delx * dely
-    + a[5] * delx * delz
-    + a[6] * dely * delz
-    + a[7] * delx * dely * delz;
+     + a[2] * dely
+     + a[3] * delz
+     + a[4] * delx * dely
+     + a[5] * delx * delz
+     + a[6] * dely * delz
+     + a[7] * delx * dely * delz;
 
 
   return;
 }
-  

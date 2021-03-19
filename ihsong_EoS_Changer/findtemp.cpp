@@ -4,15 +4,15 @@
 #include<math.h>
 #include "nuc_eos.h"
 
-double linterp2D(double* xs, double* ys, double* fs, double x, double y);
+double linterp2D( double* xs, double* ys, double* fs, double x, double y );
 
-void bisection(double lr, double lt0, double ye, double leps0, double* ltout,
-	       int iv, double prec, int* keyerrt);
+void bisection( double lr, double lt0, double ye, double leps0, double* ltout,
+	              int iv, double prec, int* keyerrt );
 
-void nuc_eos_C_findtemp_pressure(double lr, double lt0, double ye,
-			double lprsin, double *ltout, double prec, int *keyerrt) {
+void nuc_eos_C_findtemp_pressure( double lr, double lt0, double ye, double lprsin, double *ltout, 
+                                  double prec, int *keyerrt ) {
   
-  // local vars
+   // local vars
   int itmax = 20; // use at most 20 iterations, then go to bisection
   double dlprsdlt; // derivative dlogprs/dlogT
   double ldt;
@@ -38,6 +38,7 @@ void nuc_eos_C_findtemp_pressure(double lr, double lt0, double ye,
   }
   lt1 = lt;
   lprs1 = lprs;
+
 
   int it = 0;
   while(it < itmax) {
@@ -229,7 +230,7 @@ void nuc_eos_C_findtemp_entropy(double lr, double lt0, double ye,
     // Check if we are already bracketing the input internal
     // energy. If so, interpolate for new T.
     if(s0 >= ss1 && s0 <= ss2) {
-
+      
       *ltout = (logtemp[itemp]-logtemp[itemp-1]) / (ss2 - ss1) *
 	           (s0 - ss1) + logtemp[itemp-1];
 #if DEBUG
@@ -445,8 +446,8 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
   // iv is the index of the table variable we do the bisection on
 
   int bcount = 0;
-  int maxbcount = 32;
-  int itmax = 50;
+  int maxbcount = 100;
+  int itmax = 100;
 
   // temporary local vars
   double lt, lt1, lt2;
@@ -459,8 +460,8 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
 
   // prepare
   lt = lt0;
-  lt1 = log10( MIN(pow(10.0,ltmax),(1.2)*(pow(10.0,lt0))) );
-  lt2 = log10( MAX(pow(10.0,ltmin),(0.8)*(pow(10.0,lt0))) );
+  lt1 = log10( MIN(pow(10.0,ltmax),(1.005)*(pow(10.0,lt0))) );
+  lt2 = log10( MAX(pow(10.0,ltmin),(0.995)*(pow(10.0,lt0))) );
 
   int nvars = 3;
   nuc_eos_C_cubinterp_some(lr, lt1, ye, f1a, alltables,
@@ -475,31 +476,31 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
   // iterate until we bracket the right eps, but enforce
   // dE/dt > 0, so eps(lt1) > eps(lt2)
 #if 0
-  int ifixdeg = 0;
-  int ifixdeg_max = 20;
+ int ifixdeg = 0;
+ int ifixdeg_max = 20;
 #endif
   
   while(f1*f2 >= 0.0) {
     
-    lt1 = log10( MIN(pow(10.0,ltmax),(1.2)*(pow(10.0,lt1))) );
-    lt2 = log10( MAX(pow(10.0,ltmin),(0.8)*(pow(10.0,lt2))) );
+    lt1 = log10( MIN(pow(10.0,ltmax),(1.005)*(pow(10.0,lt1))) );
+    lt2 = log10( MAX(pow(10.0,ltmin),(0.995)*(pow(10.0,lt2))) );
     nuc_eos_C_cubinterp_some(lr, lt1, ye, f1a, alltables,
 			   ivs_short, nrho, ntemp, nye, nvars,
 			   logrho, logtemp, yes);
-    nuc_eos_C_cubinterp_some(lr, lt2, ye, f2a, alltables,
+    nuc_eos_C_linterp_some(lr, lt2, ye, f2a, alltables,
 			   ivs_short, nrho, ntemp, nye, nvars,
 			   logrho, logtemp, yes);
 
 #if 0
-    // special enforcement of eps(lt1)>eps(lt2)
-    while(f1a < f2a && ifixdeg < ifixdeg_max) {
-      lt1 = log10( MIN(pow(10.0,ltmax),1.2*(pow(10.0,lt1))) );
-      nuc_eos_C_cubinterp_some(lr, lt1, ye, &f1a, alltables,
-			     ivs, nrho, ntemp, nye, nvars,
+   // special enforcement of eps(lt1)>eps(lt2)
+   while(f1a < f2a && ifixdeg < ifixdeg_max) {
+     lt1 = log10( MIN(pow(10.0,ltmax),1.2*(pow(10.0,lt1))) );
+     nuc_eos_C_cubinterp_some(lr, lt1, ye, f1a, alltables,
+			     ivs_short, nrho, ntemp, nye, nvars,
 			     logrho, logtemp, yes);
-      ifixdeg++;
+     ifixdeg++;
 
-    }
+   }
 #endif
   
     f1 = f1a[iv] - leps0;
@@ -513,16 +514,16 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
     bcount++;
     if(bcount >= maxbcount) {
       *keyerrt = 667;
-      double bdry_chk;
-      nuc_eos_C_cubinterp_some(lr, logtemp[0]+1e-10, ye, f1a, alltables,
-           ivs_short, nrho, ntemp, nye, nvars,
-           logrho, logtemp, yes);
-      nuc_eos_C_cubinterp_some(lr, logtemp[ntemp-1]-1e-10, ye, f2a, alltables,
-           ivs_short, nrho, ntemp, nye, nvars,
-           logrho, logtemp, yes);
+      // double bdry_chk;
+      // nuc_eos_C_linterp_some(lr, logtemp[0]+1e-10, ye, f1a, alltables,
+      //      ivs_short, nrho, ntemp, nye, nvars,
+      //      logrho, logtemp, yes);
+      // nuc_eos_C_linterp_some(lr, logtemp[ntemp-1]-1e-10, ye, f2a, alltables,
+      //      ivs_short, nrho, ntemp, nye, nvars,
+      //      logrho, logtemp, yes);
 
-      bdry_chk = (f1a[iv] - leps0)*(f2a[iv] - leps0);
-      if (bdry_chk < 0) printf("keyerr = %3D bdry_chk = %7.2E\n", keyerrt, bdry_chk);
+      // bdry_chk = (f1a[iv] - leps0)*(f2a[iv] - leps0);
+      // //if (bdry_chk < 0) printf("keyerr = %3d bdry_chk = %7.2E\n", keyerrt, bdry_chk);
 
       return;
     }
@@ -533,8 +534,8 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
     lt = lt1;
     dlt = log10( pow(10.0,lt2) - pow(10.0,lt1) );
   } else {
-  lt = lt2;
-  dlt = log10( pow(10.0,lt1) - pow(10.0,lt2) );
+    lt = lt2;
+    dlt = log10( pow(10.0,lt1) - pow(10.0,lt2) );
   }
 
   int it;
@@ -554,6 +555,7 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
     
     if(fabs(1.0-f2a[iv]/leps0) <= 1e-10) {
       *ltout = ltmid;
+      //printf("success in bisection %5.2f\n", *ltout);
       return;
     }
 

@@ -3,15 +3,14 @@
 #include <math.h>
 #include "nuc_eos.h"
 
-void nuc_eos_C_short(double xrho, double *xtemp, double xye,
-		     double *xenr, double *xprs, double *xent,
-		     double *xcs2, double *xmunu, double *xmuhat,
-				 double *xmu_e, double *xmu_p, double *xmu_n,
-				 double *xXa, double *xXh, double *xXn,
-				 double *xXp, double *xAbar, double *xZbar,
-				 double *xgamma, int keytemp, int *keyerr,
-				 double rfeps) 
-
+void nuc_eos_C_short( double xrho, double *xtemp, double xye,
+		                  double *xenr, double *xprs, double *xent,
+		                  double *xcs2, double *xmunu, double *xmuhat,
+				              double *xmu_e, double *xmu_p, double *xmu_n,
+				              double *xXa, double *xXh, double *xXn,
+				              double *xXp, double *xAbar, double *xZbar,
+				              double *xgamma, double *dpde, int keytemp, int *keyerr,
+				              double rfeps ) 
 {
   // This routine expects rho in g/cm^3 and T in MeV.
   // It will strictly return values in cgs or MeV
@@ -89,15 +88,15 @@ void nuc_eos_C_short(double xrho, double *xtemp, double xye,
     *xtemp = pow(10.0, lt);
   }
 
-  double res[16];
+  double res[19];
   
 	// linear interpolation
 	//nuc_eos_C_linterp_some(lr, lt, xye, res, alltables, ivs_short, 
-	//					nrho, ntemp, nye, 16, logrho, logtemp, yes);
-
+ 	//		                 nrho, ntemp, nye, 19, logrho, logtemp, yes);
+//
 	// cubic interpolation
 	nuc_eos_C_cubinterp_some(lr, lt, xye, res, alltables, ivs_short, 
-						nrho, ntemp, nye, 16, logrho, logtemp, yes);
+						               nrho, ntemp, nye, 19, logrho, logtemp, yes);
   
   
 	// assign results
@@ -128,6 +127,7 @@ void nuc_eos_C_short(double xrho, double *xtemp, double xye,
 	*xAbar  = res[13];
 	*xZbar  = res[14];
 	*xgamma = res[15];
+  *dpde   = res[17];
 
   return;
 }

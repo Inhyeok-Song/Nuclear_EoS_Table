@@ -8,7 +8,6 @@ void nuc_eos_C_linterp_for_temp(double x, double y, double z,
 				int nx, int ny, int nz, 
 				double* xt,double*yt, double* zt, 
 				double* dlepsdlt)
-
 {
 
 //!
@@ -122,4 +121,3 @@ void nuc_eos_C_linterp_for_temp(double x, double y, double z,
 
   return;
 }
-  

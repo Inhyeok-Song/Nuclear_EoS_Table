@@ -67,9 +67,9 @@ void nuc_eos_C_linterp_some(double x, double y, double z,
 
   // determine location in table
 
-  ix = 1 + (int)( (x - xt[0] - 1.0e-10) * dxi );
-  iy = 1 + (int)( (y - yt[0] - 1.0e-10) * dyi );
-  iz = 1 + (int)( (z - zt[0] - 1.0e-10) * dzi );
+  ix = 1 + (int)( (x - xt[0] - 1.0e-20) * dxi );
+  iy = 1 + (int)( (y - yt[0] - 1.0e-20) * dyi );
+  iz = 1 + (int)( (z - zt[0] - 1.0e-20) * dzi );
 
   ix = MAX( 1, MIN( ix, nx-1 ) );
   iy = MAX( 1, MIN( iy, ny-1 ) );

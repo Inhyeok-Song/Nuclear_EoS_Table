@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "NuclearEos.h"
-#include "NuclearEos.cuh"
 
-double *Rand_Vars;
+
+double *Rand_Vars[NUC_TABLE_NPTR];
 
 
 void Pick_Rand_Points();
@@ -15,14 +15,19 @@ void PassRandPoints2GPU() {
    Pick_Rand_Points();
 
 
-   long Rand_Size = sizeof(double)*NUC_TABLE_NPTR*npoints;
+   long Rand_Size = sizeof(double)*npoints;
       
 
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_Rand_Vars, Rand_Size ) );
-   CUDA_CHECK_ERROR( cudaMemcpy( d_Rand_Vars, Rand_Vars, Rand_Size, cudaMemcpyHostToDevice ) );
+   for ( int t=0; t<NUC_TABLE_NPTR; t++ ) {
+      cudaMalloc( (void**)&d_Rand_Vars[t], Rand_Size );
+      cudaMemcpy( d_Rand_Vars[t], Rand_Vars[t], Rand_Size, cudaMemcpyHostToDevice );
+   }
 
-   free(Rand_Vars);
-   Rand_Vars = NULL;
+   for ( int t=0; t<NUC_TABLE_NPTR; t++ ) {
+      free( Rand_Vars[t] );
+      Rand_Vars[t] = NULL;
+   }
+
 
 } //FUNCTION : PassRandPoints2GPU
 
@@ -44,8 +49,10 @@ void Pick_Rand_Points()
    double lprssmin    = log10(pow(10.0, 1.02 * 37.84367789977789));
    double lprss_range = lprssmax - lprssmin;
 
-   long Rand_Size = sizeof(double)*NUC_TABLE_NPTR*npoints;
-   Rand_Vars = (double*)malloc( Rand_Size );
+   long Rand_Size = sizeof(double)*npoints;
+   for ( int t=0; t<NUC_TABLE_NPTR; t++ ) {
+      Rand_Vars[t] = (double*)malloc( Rand_Size );
+   }
 
    for ( int i=0; i<npoints; i++ ) {
       // set random points (rho, eps, Ye) 
@@ -71,10 +78,10 @@ void Pick_Rand_Points()
       array[7] = 0.1;
       
       for (int j=0; j<NUC_TABLE_NPTR; j++) {
-         Rand_Vars[j + NUC_TABLE_NPTR*i] = array[j];
+         Rand_Vars[j][i] = array[j];
       }
-
    }
  
+   
 
 } // FUNCTION : Pick_Rand_Points

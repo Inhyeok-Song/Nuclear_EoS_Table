@@ -39,7 +39,7 @@ extern double *d_energy_shift;
 
 extern double *d_EoS_Table[EOS_NTABLE_MAX];
 
-extern double *d_Rand_Vars;
+extern double *d_Rand_Vars[NUC_TABLE_NPTR];
 
 
 // auxiliary array indices
@@ -103,22 +103,3 @@ extern double *d_Rand_Vars;
 
 // core function declarations
 void nuc_eos_C_ReadTable( char *nuceos_table_name );
-//
-
-//void NuclearEoS_Init();
-
-//void nuc_eos_C_linterp_some( double x, double y, double z,
-//			                    double *output_vars, double *alltables,
-//                             int nx, int ny, int nz, int nvars, 
-//                             double *xt,double *yt, double *zt );
-//
-//void nuc_eos_C_cubinterp_some( double x, double y, double z, 
-//					                double *output_vars, double *alltables,
-//                               int nx, int ny, int nz, int nvars, 
-//                               double *xt, double *yt, double *zt );
-//
-//void find_energy( double x, double y, double z,
-//                  double *found_leps, double *alltables_mode,
-//                  int nx, int ny, int nz, int neps,
-//                  double *xt, double *yt, double *zt, double *logeps,
-//                  int keymode, int *keyerr );

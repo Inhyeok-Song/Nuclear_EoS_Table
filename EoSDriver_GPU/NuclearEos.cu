@@ -71,12 +71,13 @@ void nuc_eos_C_short( double xrho, double *xenr, double xye,
                       double *alltables, double *alltables_mode,
                       double *logrho, double *logeps, double *yes,
                       double *logtemp_mode, double *entr_mode, double *logprss_mode,
-                      int keymode, int *keyerr, const double rfeps )
+                      int keymode, int *keyerr )
 {
 
    double lr = log10(xrho);
    *keyerr = 0;
    
+
    // check whether eps and Y_e is within the table
    if ( log10(xrho) > logrho[nrho-1] )     { *keyerr = 105; return; }
    if ( log10(xrho) < logrho[0] )          { *keyerr = 106; return; }

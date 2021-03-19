@@ -34,7 +34,7 @@ double *d_energy_shift = NULL;
 
 double *d_EoS_Table[EOS_NTABLE_MAX] = {NULL};
 
-double *d_Rand_Vars = NULL;
+double *d_Rand_Vars[NUC_TABLE_NPTR] = {NULL};
 
 
 void PassNuclearEoSTable2GPU(void);
@@ -57,11 +57,12 @@ int main( int argc, char* argv[] )
    // send CPU table to GPU
    PassNuclearEoSTable2GPU();
  
+ 
    // send Rand_Vars to GPU
-   time_init = clock();
-   PassRandPoints2GPU();
-   time_end = clock();
-   excute_time = (double)(time_end - time_init) / (CLOCKS_PER_SEC);
+   //time_init = clock();
+   //PassRandPoints2GPU();
+   //time_end = clock();
+   //excute_time = (double)(time_end - time_init) / (CLOCKS_PER_SEC);
 
    // test NuclearEos in GPU
    NuclearEoS_Init();

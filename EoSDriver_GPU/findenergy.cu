@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <math.h>
 #include "NuclearEos.h"
-#include "NuclearEos.cuh"
 
 
 GPU_DEVICE static

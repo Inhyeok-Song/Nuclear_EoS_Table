@@ -5,7 +5,7 @@
 void MemFree_NuclearEoS() {
    
 
-   for ( int t=0; t<NUC_TABLE_NPTR; t++ )
+   for ( int t=0; t<EOS_NTABLE_MAX; t++ )
    {
       if ( d_EoS_Table[t] != NULL ) 
       {
@@ -25,8 +25,13 @@ void MemFree_NuclearEoS() {
    cudaFree( d_nmode );
    d_nmode = NULL;
 
-   cudaFree( d_Rand_Vars );
-   d_Rand_Vars = NULL;
+   for ( int t=0; t<NUC_TABLE_NPTR; t++ )
+   { 
+      if ( d_Rand_Vars != NULL )
+      {
+         cudaFree( d_Rand_Vars[t] );
+         d_Rand_Vars[t] = NULL;
+      }
+   }
 
 }
-

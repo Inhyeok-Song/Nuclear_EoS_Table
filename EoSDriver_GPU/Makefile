@@ -31,7 +31,6 @@ CUDA_LINK_LIBS=-lcudart
 CPU_FILE=$(shell find . -type f -name "*.cpp")
 GPU_FILE=$(shell find . -type f -name "*.cu")
 INCLUDES=NuclearEos.h
-INCLUDES_CUDA=NuclearEos.cuh
 OBJECTS=$(CPU_FILE:.cpp=.o)
 OBJECTS+=$(GPU_FILE:.cu=.o)
 
@@ -46,11 +45,11 @@ EXE=driver
 
 
 # Compile .cpp files to objcet files:
-%.o: %.cpp $(INCLUDES) $(INCLUDES_CUDA)
+%.o: %.cpp $(INCLUDES)	
 	$(CXX) $(CFLAGS) $(MPIINCS) $(HDF5INCS) -c $< -o $@
 
 # Compile CUDA source files to objects files:
-%.o: %.cu $(INCLUDES) $(INCLUDES_CUDA)
+%.o: %.cu $(INCLUDES)
 	$(NVCC) $(NVCCFLAGS) $(MPIINCS) $(HDF5INCS) -c $< -o $@ 
 
 # Link C++ and CUDA compiled object files to targer executable:

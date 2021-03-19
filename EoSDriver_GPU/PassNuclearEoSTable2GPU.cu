@@ -1,6 +1,5 @@
 #include "NuclearEos.h"
-#include "NuclearEos.cuh"
-#include <stdio.h>
+
 
 void PassNuclearEoSTable2GPU() {
 
@@ -18,22 +17,23 @@ void PassNuclearEoSTable2GPU() {
 
    for( int t=0; t<NUC_TABLE_NPTR; t++ )
    {
-      CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_EoS_Table[t], EoS_TableSize[t] ) );
-      CUDA_CHECK_ERROR( cudaMemcpy( d_EoS_Table[t], h_EoS_Table[t], EoS_TableSize[t], cudaMemcpyHostToDevice ) );
+      cudaMalloc( (void**)&d_EoS_Table[t], EoS_TableSize[t] );
+      cudaMemcpy( d_EoS_Table[t], h_EoS_Table[t], EoS_TableSize[t], cudaMemcpyHostToDevice );
    }
  
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_energy_shift, sizeof(double) ) );
-   CUDA_CHECK_ERROR( cudaMemcpy( d_energy_shift, &g_energy_shift, sizeof(double), cudaMemcpyHostToDevice ) );
+   cudaMalloc( (void**)&d_energy_shift, sizeof(double) ) ;
+   cudaMemcpy( d_energy_shift, &g_energy_shift, sizeof(double), cudaMemcpyHostToDevice ) ;
 
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_nrho, sizeof(int) ) );
-   CUDA_CHECK_ERROR( cudaMemcpy( d_nrho, &g_nrho, sizeof(int), cudaMemcpyHostToDevice ) );
-   
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_neps, sizeof(int) ) );
-   CUDA_CHECK_ERROR( cudaMemcpy( d_neps, &g_neps, sizeof(int), cudaMemcpyHostToDevice ) );
-   
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_nye, sizeof(int) ) );
-   CUDA_CHECK_ERROR( cudaMemcpy( d_nye, &g_nye, sizeof(int), cudaMemcpyHostToDevice ) );
-   
-   CUDA_CHECK_ERROR( cudaMalloc( (void**)&d_nmode, sizeof(int) ) );
-   CUDA_CHECK_ERROR( cudaMemcpy( d_nmode, &g_nmode, sizeof(int), cudaMemcpyHostToDevice ) );
+   cudaMalloc( (void**)&d_nrho, sizeof(int) ) ;
+   cudaMemcpy( d_nrho, &g_nrho, sizeof(int), cudaMemcpyHostToDevice ) ;
+
+   cudaMalloc( (void**)&d_neps, sizeof(int) ) ;
+   cudaMemcpy( d_neps, &g_neps, sizeof(int), cudaMemcpyHostToDevice ) ;
+
+   cudaMalloc( (void**)&d_nye, sizeof(int) ) ;
+   cudaMemcpy( d_nye, &g_nye, sizeof(int), cudaMemcpyHostToDevice ) ;
+
+   cudaMalloc( (void**)&d_nmode, sizeof(int) ) ;
+   cudaMemcpy( d_nmode, &g_nmode, sizeof(int), cudaMemcpyHostToDevice ) ;
+
 }

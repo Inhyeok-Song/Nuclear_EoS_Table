@@ -23,7 +23,6 @@
 void write_eos_table( char *nuceos_eps_table_name ) 
 {
 
-
   fprintf(stdout, "*******************************\n");
   fprintf(stdout, "Writing nuc_eos table file:\n");
   fprintf(stdout, "%s\n", nuceos_eps_table_name);
@@ -33,7 +32,7 @@ void write_eos_table( char *nuceos_eps_table_name )
   hid_t    file;
   hid_t    dataset;
   hid_t    space;
-  hsize_t  dims[3]     = {nye2, neps2, nrho2};
+  hsize_t  dims[3]      = {nye2, neps2, nrho2};
   hsize_t  dims_mode[3] = {nye_mode, nmode, nrho_mode};
 
   
@@ -123,7 +122,7 @@ void write_eos_table( char *nuceos_eps_table_name )
   int keyerr;
   const double prec = 1.e-10; // tolerance
 
-  xtemp  = pow(10.0, logtemp[1]);
+  xtemp  = pow(10.0, logtemp[5]);
   for (int i=0; i<nye2; i++)
   {
     for (int j=0; j<neps2; j++)
@@ -174,7 +173,7 @@ void write_eos_table( char *nuceos_eps_table_name )
           eos_table[i][j][k][13] = NAN;  // 0.0;
           eos_table[i][j][k][14] = NAN;  // 0.0;
           eos_table[i][j][k][15] = NAN;  // 0.0;
-          xtemp  = pow(10.0, logtemp[1]);
+          xtemp  = pow(10.0, logtemp[5]);
         }
       }
     }
@@ -183,16 +182,16 @@ void write_eos_table( char *nuceos_eps_table_name )
 
   //  energy array for temperature mode 
   keytemp = 1;
-  xtemp  = pow(10.0, logtemp[1]);
-  for (int i=0; i<nye2; i++)
+  xtemp  = pow(10.0, logtemp[5]);
+  for (int i=0; i<nye_mode; i++)
   {
     for (int j=0; j<nmode; j++)
     {
-      for (int k=0; k<nrho2; k++)
+      for (int k=0; k<nrho_mode; k++)
       {
         xrho  = pow(10.0, logrho_mode[k]);
         xtemp = pow(10.0, logtemp_mode[j]);
-        xye   = yes2[i];
+        xye   = yes_mode[i];
         nuc_eos_C_short( xrho, &xtemp, xye, &xeps, &xprs, &xent, &xcs2, &xmunu,
                          &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
                          &xAbar, &xZbar, &xgamma, &dpde, keytemp, &keyerr, prec );
@@ -203,7 +202,7 @@ void write_eos_table( char *nuceos_eps_table_name )
         else 
         {
           eos_table_mode[i][j][k][0] = NAN;
-          xtemp  = pow(10.0, logtemp[1]);
+          xtemp  = pow(10.0, logtemp[5]);
         }
       }
     }
@@ -212,12 +211,12 @@ void write_eos_table( char *nuceos_eps_table_name )
 
   //  energy array for entropy mode
   keytemp = 2;
-  xtemp  = pow(10.0, logtemp[1]);
-  for (int i=0; i<nye2; i++)
+  xtemp  = pow(10.0, logtemp[5]);
+  for (int i=0; i<nye_mode; i++)
   {
     for (int j=0; j<nmode; j++)
     {
-      for (int k=0; k<nrho2; k++)
+      for (int k=0; k<nrho_mode; k++)
       {
         xrho = pow( 10.0, logrho_mode[k] );
         xent = entr_mode[j];
@@ -232,7 +231,7 @@ void write_eos_table( char *nuceos_eps_table_name )
         else //if (ii == ntemp-2 && keyerr !=0)
         {
           eos_table_mode[i][j][k][1] = NAN;
-          xtemp  = pow(10.0, logtemp[1]);
+          xtemp  = pow(10.0, logtemp[5]);
         }
       }
     }
@@ -241,31 +240,30 @@ void write_eos_table( char *nuceos_eps_table_name )
 
   // energy array for pressure mode
   keytemp = 3;
-  xtemp = pow(10.0, logtemp[1]);
+  xtemp = pow(10.0, logtemp[5]);
   for (int i=0; i<nye_mode; i++)
   {
     for (int j=0; j<nmode; j++)
-     {
-       for (int k=0; k<nrho_mode; k++)
-       {
-         xrho  = pow( 10.0, logrho_mode[k] );
-         xprs  = pow( 10.0, logprss_mode[j] );
-         xye   = yes_mode[i];
-         nuc_eos_C_short( xrho, &xtemp, xye, &xeps, &xprs, &xent, &xcs2, &xmunu,
-                          &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
-                          &xAbar, &xZbar, &xgamma, &dpde, keytemp, &keyerr, prec );
-         if (keyerr == 0)
-         {
-           eos_table_mode[i][j][k][2] = log10(xeps + energy_shift);
-         }
-         else
-         {
-           eos_table_mode[i][j][k][2] = NAN;
-           xtemp = pow(10.0, logtemp[1]);
-         }
-         
-       }
-     }
+    {
+      for (int k=0; k<nrho_mode; k++)
+      {
+        xrho  = pow( 10.0, logrho_mode[k] );
+        xprs  = pow( 10.0, logprss_mode[j] );
+        xye   = yes_mode[i];
+        nuc_eos_C_short( xrho, &xtemp, xye, &xeps, &xprs, &xent, &xcs2, &xmunu,
+                         &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
+                         &xAbar, &xZbar, &xgamma, &dpde, keytemp, &keyerr, prec );
+        if (keyerr == 0)
+        {
+          eos_table_mode[i][j][k][2] = log10(xeps + energy_shift);
+        }
+        else
+        {
+          eos_table_mode[i][j][k][2] = NAN;
+          xtemp = pow(10.0, logtemp[1]);
+        }
+      }
+    }
   }
   fprintf(stdout, "pressure mode is done\n");
 
@@ -273,9 +271,9 @@ void write_eos_table( char *nuceos_eps_table_name )
   // extend pressure mode boundaries
   //int count_it = 0;
   int iii = 0;
-  while (iii<1) {
+  while (iii<3) {
     iii++;
-    xtemp = pow(10.0, logtemp[1]);
+    xtemp = pow(10.0, logtemp[5]);
     for (int i=0; i<nye_mode; i++)
     {
       for (int j=3; j<nmode-4; j++)
@@ -286,23 +284,14 @@ void write_eos_table( char *nuceos_eps_table_name )
           {
             keyerr = 0;
             xrho  = pow( 10.0, logrho_mode[k] );
-            xprs  = pow( 10.0, logprss_mode[j+1] );
-            xeps  = pow( 10.0, eos_table_mode[i][j+iii][k][2]) - energy_shift;
-            xtemp = pow( 10.0, logtemp[10] );
+            xprs  = pow( 10.0, logprss_mode[j+iii] );
+            xtemp = pow( 10.0, logtemp[5] );
             xye   = yes_mode[i];
-            //double xeps0 = xeps;
             nuc_eos_C_short( xrho, &xtemp, xye, &xeps, &xprs, &xent, &xcs2, &xmunu,
                              &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
                              &xAbar, &xZbar, &xgamma, &dpde, 3, &keyerr, prec );
-            //if (keyerr != 0) // energy mode to find dpde
-            //{ 
-            //  nuc_eos_C_short( xrho, &xtemp, xye, &xeps0, &xprs, &xent, &xcs2, &xmunu,
-            //                   &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
-            //                   &xAbar, &xZbar, &xgamma, &dpde, 0, &keyerr, prec );
-            //}
             if (keyerr == 0)
             {
-              //count_it++;
               double dp = pow(10.0, logprss_mode[j+iii]) - pow(10.0, logprss_mode[j]);
               eos_table_mode[i][j][k][2] = log10(pow(10.0, eos_table_mode[i][j+iii][k][2]) - dp/dpde);
             }
@@ -312,27 +301,18 @@ void write_eos_table( char *nuceos_eps_table_name )
             }
 
           }
-          else if ( isnan(eos_table_mode[i][j][k][2]) && !isnan(eos_table_mode[i][j-iii][k][2]) )
+          else if ( isnan(eos_table_mode[i][j][k][2]) && !isnan(eos_table_mode[i][j-1][k][2]) )
           {
             keyerr = 0;
             xrho  = pow( 10.0, logrho_mode[k] );
-            xprs  = pow( 10.0, logprss_mode[j-1] );
-            xeps  = pow( 10.0, eos_table_mode[i][j-iii][k][2]) - energy_shift;
-            xtemp = pow( 10.0, logtemp[ntemp-10] );
+            xprs  = pow( 10.0, logprss_mode[j-iii] );
+            xtemp = pow( 10.0, logtemp[ntemp-5] );
             xye   = yes_mode[i];
-            //double xeps0 = xeps;
             nuc_eos_C_short( xrho, &xtemp, xye, &xeps, &xprs, &xent, &xcs2, &xmunu,
                              &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
                              &xAbar, &xZbar, &xgamma, &dpde, 3, &keyerr, prec );
-            // if (keyerr != 0) // energy mode to find dpde
-            // { 
-            //   nuc_eos_C_short( xrho, &xtemp, xye, &xeps0, &xprs, &xent, &xcs2, &xmunu,
-            //                    &xmuhat, &xmu_e, &xmu_p, &xmu_n, &xXa, &xXh, &xXn, &xXp,
-            //                    &xAbar, &xZbar, &xgamma, &dpde, 0, &keyerr, prec );
-            // }                 
             if (keyerr == 0) 
             {
-              //count_it++;
               double dp = pow(10.0, logprss_mode[j]) - pow(10.0, logprss_mode[j-iii]);
               eos_table_mode[i][j][k][2] = log10(pow(10.0, eos_table_mode[i][j-iii][k][2]) + dp/dpde);
             }

@@ -114,19 +114,19 @@ void nuc_eos_C_short( double xrho, double *xtemp, double xye,
     *xprs = pow(10.0, res[0]);
   }
 
-   *xmunu  = res[3];
-   *xcs2   = res[4];
-	*xmuhat = res[5];
-	*xmu_e  = res[6];
-	*xmu_p  = res[7];
-	*xmu_n  = res[8];
-	*xXa	  = res[9];
-	*xXh	  = res[10];
-	*xXn	  = res[11];
-	*xXp	  = res[12];
-	*xAbar  = res[13];
-	*xZbar  = res[14];
-	*xgamma = res[15];
+  *xmunu  = res[3];
+  *xcs2   = res[4];
+  *xmuhat = res[5];
+  *xmu_e  = res[6];
+  *xmu_p  = res[7];
+  *xmu_n  = res[8];
+  *xXa	  = res[9];
+  *xXh	  = res[10];
+  *xXn	  = res[11];
+  *xXp	  = res[12];
+  *xAbar  = res[13];
+  *xZbar  = res[14];
+  *xgamma = res[15];
   *dpde   = res[17];
 
   return;

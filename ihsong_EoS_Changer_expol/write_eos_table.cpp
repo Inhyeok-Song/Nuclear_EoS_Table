@@ -196,7 +196,7 @@ void write_eos_table( char *nuceos_eps_table_name )
    }
    
    for (int N_exp=0; N_exp<N_exp_max; N_exp++) {
-      for (int iv=0; iv<3; iv++) 
+      for (int iv=0; iv<2; iv++) 
       {
          for (int k=0; k<nye_mode; k++)
          {

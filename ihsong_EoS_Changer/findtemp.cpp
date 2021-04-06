@@ -11,140 +11,143 @@ void bisection( double lr, double lt0, double ye, double leps0, double* ltout,
 
 void nuc_eos_C_findtemp_pressure( double lr, double lt0, double ye, double lprsin, double *ltout, 
                                   double prec, int *keyerrt ) {
+
+  //while (prec < 2.0E-2) {  
+     // local vars
+    int itmax = 20; // use at most 20 iterations, then go to bisection
+    double dlprsdlt; // derivative dlogprs/dlogT
+    double ldt;
+    double lprs,lprs0,lprs1; // temp vars for prs
+    double ltn, lt, lt1; // temp vars for temperature
+    double ltmax = logtemp[ntemp-1]; // max temp
+    double ltmin = logtemp[0]; // min temp
   
-   // local vars
-  int itmax = 20; // use at most 20 iterations, then go to bisection
-  double dlprsdlt; // derivative dlogprs/dlogT
-  double ldt;
-  double lprs,lprs0,lprs1; // temp vars for prs
-  double ltn, lt, lt1; // temp vars for temperature
-  double ltmax = logtemp[ntemp-1]; // max temp
-  double ltmin = logtemp[0]; // min temp
-
-  // setting up some vars
-  *keyerrt = 0;
-  lprs0 = lprsin;
-  lprs1 = lprs0;
-  lt = lt0;
-  lt1 = lt;
-
-  // step 1: do we already have the right temperature
-  nuc_eos_C_linterp_for_prs(lr,lt,ye,&lprs,alltables,nrho,ntemp,nye,
-			     logrho,logtemp,yes,&dlprsdlt);
-
-  if(fabs(lprs-lprs0) < prec*fabs(lprs0)) {
-    *ltout = lt0;
-    return;
-  }
-  lt1 = lt;
-  lprs1 = lprs;
-
-
-  int it = 0;
-  while(it < itmax) {
-
-    // step 2: check if the two bounding values of the temperature
-    //         give prs values that enclose the new prs.
-    int itemp = MIN(MAX(1 + (int)(( lt - logtemp[0] - 1.0e-10) * dtempi),1),ntemp-1);
-    int irho = MIN(MAX(1 + (int)(( lr - logrho[0] - 1.0e-10) * drhoi),1),nrho-1);
-    int iye = MIN(MAX(1 + (int)(( ye - yes[0] - 1.0e-10) * dyei),1),nye-1);
-
-    double prst1, prst2;
-    // lower temperature
-    {
-      // get data at 4 points
-      double fs[4];
-      // point 0
-      int ifs = 0 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye-1)));
-      fs[0] = alltables[ifs];
-      // point 1
-      ifs = 0 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye-1)));
-      fs[1] = alltables[ifs];
-      // point 2
-      ifs = 0 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye)));
-      fs[2] = alltables[ifs];
-      // point 3
-      ifs = 0 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye)));
-      fs[3] = alltables[ifs];
-
-      prst1 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
-    }
-    // upper temperature
-    {
-      // get data at 4 points
-      double fs[4];
-      // point 0
-      int ifs = 0 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye-1)));
-      fs[0] = alltables[ifs];
-      // point 1
-      ifs = 0 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye-1)));
-      fs[1] = alltables[ifs];
-      // point 2
-      ifs = 0 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye)));
-      fs[2] = alltables[ifs];
-      // point 3
-      ifs = 0 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye)));
-      fs[3] = alltables[ifs];
-
-      prst2 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
-    }
-
-    // Check if we are already bracketing the input internal
-    // pressure. If so, interpolate for new T.
-    if(lprs0 >= prst1 && lprs0 <= prst2) {
-
-      *ltout = (logtemp[itemp]-logtemp[itemp-1]) / (prst2 - prst1) *
-	(lprs0 - prst1) + logtemp[itemp-1];
-#if DEBUG
-      fprintf(stderr,"it: %d, bracketed solution\n", it);
-#endif
-      return;
-
-    }
-
-    // well, then do a Newton-Raphson step
-    ldt = -(lprs - lprs0) / dlprsdlt;
-    ltn = MIN(MAX(lt + ldt,ltmin),ltmax);
+    // setting up some vars
+    *keyerrt = 0;
+    lprs0 = lprsin;
+    lprs1 = lprs0;
+    lt = lt0;
     lt1 = lt;
-    lt = ltn;
-    lprs1 = lprs;
-
+  
+    // step 1: do we already have the right temperature
     nuc_eos_C_linterp_for_prs(lr,lt,ye,&lprs,alltables,nrho,ntemp,nye,
-			       logrho,logtemp,yes,&dlprsdlt);
-#if DEBUG
-    fprintf(stderr,"findtemp it: %d, err: %15.6E \n", it, fabs((lprs-lprs0) / lprs0));
-#endif
-
+  			     logrho,logtemp,yes,&dlprsdlt);
+  
     if(fabs(lprs-lprs0) < prec*fabs(lprs0)) {
-      *ltout = lt;
+      *ltout = lt0;
       return;
     }
-
-    // if we are closer than 10^-3  to the
-    // root (prs-prs0)=0, we are switching to
-    // the secant method, since the table is rather coarse and the
-    // derivatives may be garbage.
-    if(fabs(lprs-lprs0) < 1.0e-3*fabs(lprs0)) {
-      dlprsdlt = (lprs-lprs1)/(lt-lt1);
-    }
-
-    it++;
-  }
-
-  if (it >= itmax-1) {
-    // try bisection
-  #if DEBUG
-    fprintf(stderr,"trying bisection\n");
-  #endif
-    bisection(lr, lt0, ye, lprs0, ltout, 0, prec, keyerrt);
-  #if DEBUG
-    fprintf(stderr,"bisection keyerrt: %d\n",*keyerrt);
-  #endif
-    return;
+    lt1 = lt;
+    lprs1 = lprs;
   
-    fprintf(stderr,"We should never reach this point! Aborting!\n");
-    abort();
-  }
+  
+    int it = 0;
+    while(it < itmax) {
+  
+      // step 2: check if the two bounding values of the temperature
+      //         give prs values that enclose the new prs.
+      int itemp = MIN(MAX(1 + (int)(( lt - logtemp[0] - 1.0e-10) * dtempi),1),ntemp-1);
+      int irho = MIN(MAX(1 + (int)(( lr - logrho[0] - 1.0e-10) * drhoi),1),nrho-1);
+      int iye = MIN(MAX(1 + (int)(( ye - yes[0] - 1.0e-10) * dyei),1),nye-1);
+  
+      double prst1, prst2;
+      // lower temperature
+      {
+        // get data at 4 points
+        double fs[4];
+        // point 0
+        int ifs = 0 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye-1)));
+        fs[0] = alltables[ifs];
+        // point 1
+        ifs = 0 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye-1)));
+        fs[1] = alltables[ifs];
+        // point 2
+        ifs = 0 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye)));
+        fs[2] = alltables[ifs];
+        // point 3
+        ifs = 0 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye)));
+        fs[3] = alltables[ifs];
+  
+        prst1 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
+      }
+      // upper temperature
+      {
+        // get data at 4 points
+        double fs[4];
+        // point 0
+        int ifs = 0 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye-1)));
+        fs[0] = alltables[ifs];
+        // point 1
+        ifs = 0 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye-1)));
+        fs[1] = alltables[ifs];
+        // point 2
+        ifs = 0 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye)));
+        fs[2] = alltables[ifs];
+        // point 3
+        ifs = 0 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye)));
+        fs[3] = alltables[ifs];
+  
+        prst2 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
+      }
+  
+      // Check if we are already bracketing the input internal
+      // pressure. If so, interpolate for new T.
+      if(lprs0 >= prst1 && lprs0 <= prst2) {
+  
+        *ltout = (logtemp[itemp]-logtemp[itemp-1]) / (prst2 - prst1) *
+  	(lprs0 - prst1) + logtemp[itemp-1];
+  #if DEBUG
+        fprintf(stderr,"it: %d, bracketed solution\n", it);
+  #endif
+        return;
+  
+      }
+  
+      // well, then do a Newton-Raphson step
+      ldt = -(lprs - lprs0) / dlprsdlt;
+      ltn = MIN(MAX(lt + ldt,ltmin),ltmax);
+      lt1 = lt;
+      lt = ltn;
+      lprs1 = lprs;
+  
+      nuc_eos_C_linterp_for_prs(lr,lt,ye,&lprs,alltables,nrho,ntemp,nye,
+  			       logrho,logtemp,yes,&dlprsdlt);
+  #if DEBUG
+      fprintf(stderr,"findtemp it: %d, err: %15.6E \n", it, fabs((lprs-lprs0) / lprs0));
+  #endif
+  
+      if(fabs(lprs-lprs0) < prec*fabs(lprs0)) {
+        *ltout = lt;
+        return;
+      }
+  
+      // if we are closer than 10^-3  to the
+      // root (prs-prs0)=0, we are switching to
+      // the secant method, since the table is rather coarse and the
+      // derivatives may be garbage.
+      if(fabs(lprs-lprs0) < 1.0e-3*fabs(lprs0)) {
+        dlprsdlt = (lprs-lprs1)/(lt-lt1);
+      }
+  
+      it++;
+    }
+  
+    if (it >= itmax-1) {
+      // try bisection
+    #if DEBUG
+      fprintf(stderr,"trying bisection\n");
+    #endif
+      bisection(lr, lt0, ye, lprs0, ltout, 0, prec, keyerrt);
+    #if DEBUG
+      fprintf(stderr,"bisection keyerrt: %d\n",*keyerrt);
+    #endif
+      //return;
+      if (*keyerrt == 0) return;
+    }
+    //prec = 1.2*prec;
+  //}
+  //fprintf(stderr,"We should never reach this point! Aborting!\n");
+  //abort();
 
 }
 
@@ -288,138 +291,140 @@ void nuc_eos_C_findtemp_entropy(double lr, double lt0, double ye,
 void nuc_eos_C_findtemp(double lr, double lt0, double ye,
 			double lepsin, double *ltout, double prec, int *keyerrt) {
 
-  // local vars
-  int itmax = 20; // use at most 20 iterations, then go to bisection
-  double dlepsdlt; // derivative dlogeps/dlogT
-  double ldt;
-  double leps,leps0,leps1; // temp vars for eps
-  double ltn, lt, lt1; // temp vars for temperature
-  double ltmax = logtemp[ntemp-1]; // max temp
-  double ltmin = logtemp[0]; // min temp
-
-  // setting up some vars
-  *keyerrt = 0;
-  leps0 = lepsin;
-  leps1 = leps0;
-  lt = lt0;
-  lt1 = lt;
-
-  // step 1: do we already have the right temperature
-  nuc_eos_C_linterp_for_temp(lr,lt,ye,&leps,alltables,nrho,ntemp,nye,
-			     logrho,logtemp,yes,&dlepsdlt);
-
-  if(fabs(leps-leps0) < prec*fabs(leps0)) {
-    *ltout = lt0;
-    return;
-  }
-  lt1 = lt;
-  leps1 = leps;
-
-  int it = 0;
-  while(it < itmax) {
-
-    // step 2: check if the two bounding values of the temperature
-    //         give eps values that enclose the new eps.
-    int itemp = MIN(MAX(1 + (int)(( lt - logtemp[0] - 1.0e-10) * dtempi),1),ntemp-1);
-    int irho = MIN(MAX(1 + (int)(( lr - logrho[0] - 1.0e-10) * drhoi),1),nrho-1);
-    int iye = MIN(MAX(1 + (int)(( ye - yes[0] - 1.0e-10) * dyei),1),nye-1);
-
-    double epst1, epst2;
-    // lower temperature
-    {
-      // get data at 4 points
-      double fs[4];
-      // point 0
-      int ifs = 1 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye-1)));
-      fs[0] = alltables[ifs];
-      // point 1
-      ifs = 1 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye-1)));
-      fs[1] = alltables[ifs];
-      // point 2
-      ifs = 1 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye)));
-      fs[2] = alltables[ifs];
-      // point 3
-      ifs = 1 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye)));
-      fs[3] = alltables[ifs];
-
-      epst1 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
-    }
-    // upper temperature
-    {
-      // get data at 4 points
-      double fs[4];
-      // point 0
-      int ifs = 1 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye-1)));
-      fs[0] = alltables[ifs];
-      // point 1
-      ifs = 1 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye-1)));
-      fs[1] = alltables[ifs];
-      // point 2
-      ifs = 1 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye)));
-      fs[2] = alltables[ifs];
-      // point 3
-      ifs = 1 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye)));
-      fs[3] = alltables[ifs];
-
-      epst2 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
-    }
-
-    // Check if we are already bracketing the input internal
-    // energy. If so, interpolate for new T.
-    if(leps0 >= epst1 && leps0 <= epst2) {
-
-      *ltout = (logtemp[itemp]-logtemp[itemp-1]) / (epst2 - epst1) *
-	(leps0 - epst1) + logtemp[itemp-1];
-#if DEBUG
-      fprintf(stderr,"it: %d, bracketed solution\n", it);
-#endif
-      return;
-
-    }
-
-    // well, then do a Newton-Raphson step
-    ldt = -(leps - leps0) / dlepsdlt;
-    ltn = MIN(MAX(lt + ldt,ltmin),ltmax);
+  //while (prec < 2E-2) {
+    // local vars
+    int itmax = 20; // use at most 20 iterations, then go to bisection
+    double dlepsdlt; // derivative dlogeps/dlogT
+    double ldt;
+    double leps,leps0,leps1; // temp vars for eps
+    double ltn, lt, lt1; // temp vars for temperature
+    double ltmax = logtemp[ntemp-1]; // max temp
+    double ltmin = logtemp[0]; // min temp
+  
+    // setting up some vars
+    *keyerrt = 0;
+    leps0 = lepsin;
+    leps1 = leps0;
+    lt = lt0;
     lt1 = lt;
-    lt = ltn;
-    leps1 = leps;
-
+  
+    // step 1: do we already have the right temperature
     nuc_eos_C_linterp_for_temp(lr,lt,ye,&leps,alltables,nrho,ntemp,nye,
-			       logrho,logtemp,yes,&dlepsdlt);
-#if DEBUG
-    fprintf(stderr,"findtemp it: %d, err: %15.6E \n", it, fabs((leps-leps0) / leps0));
-#endif
-
+  			     logrho,logtemp,yes,&dlepsdlt);
+  
     if(fabs(leps-leps0) < prec*fabs(leps0)) {
-      *ltout = lt;
+      *ltout = lt0;
       return;
     }
-
-    // if we are closer than 10^-3  to the
-    // root (eps-eps0)=0, we are switching to
-    // the secant method, since the table is rather coarse and the
-    // derivatives may be garbage.
-    if(fabs(leps-leps0) < 1.0e-3*fabs(leps0)) {
-      dlepsdlt = (leps-leps1)/(lt-lt1);
+    lt1 = lt;
+    leps1 = leps;
+  
+    int it = 0;
+    while(it < itmax) {
+  
+      // step 2: check if the two bounding values of the temperature
+      //         give eps values that enclose the new eps.
+      int itemp = MIN(MAX(1 + (int)(( lt - logtemp[0] - 1.0e-10) * dtempi),1),ntemp-1);
+      int irho = MIN(MAX(1 + (int)(( lr - logrho[0] - 1.0e-10) * drhoi),1),nrho-1);
+      int iye = MIN(MAX(1 + (int)(( ye - yes[0] - 1.0e-10) * dyei),1),nye-1);
+  
+      double epst1, epst2;
+      // lower temperature
+      {
+        // get data at 4 points
+        double fs[4];
+        // point 0
+        int ifs = 1 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye-1)));
+        fs[0] = alltables[ifs];
+        // point 1
+        ifs = 1 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye-1)));
+        fs[1] = alltables[ifs];
+        // point 2
+        ifs = 1 + NTABLES*(irho-1 + nrho*((itemp-1) + ntemp*(iye)));
+        fs[2] = alltables[ifs];
+        // point 3
+        ifs = 1 + NTABLES*(irho + nrho*((itemp-1) + ntemp*(iye)));
+        fs[3] = alltables[ifs];
+  
+        epst1 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
+      }
+      // upper temperature
+      {
+        // get data at 4 points
+        double fs[4];
+        // point 0
+        int ifs = 1 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye-1)));
+        fs[0] = alltables[ifs];
+        // point 1
+        ifs = 1 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye-1)));
+        fs[1] = alltables[ifs];
+        // point 2
+        ifs = 1 + NTABLES*(irho-1 + nrho*((itemp) + ntemp*(iye)));
+        fs[2] = alltables[ifs];
+        // point 3
+        ifs = 1 + NTABLES*(irho + nrho*((itemp) + ntemp*(iye)));
+        fs[3] = alltables[ifs];
+  
+        epst2 = linterp2D(&logrho[irho-1],&yes[iye-1], fs, lr, ye);
+      }
+  
+      // Check if we are already bracketing the input internal
+      // energy. If so, interpolate for new T.
+      if(leps0 >= epst1 && leps0 <= epst2) {
+  
+        *ltout = (logtemp[itemp]-logtemp[itemp-1]) / (epst2 - epst1) *
+  	(leps0 - epst1) + logtemp[itemp-1];
+  #if DEBUG
+        fprintf(stderr,"it: %d, bracketed solution\n", it);
+  #endif
+        return;
+  
+      }
+  
+      // well, then do a Newton-Raphson step
+      ldt = -(leps - leps0) / dlepsdlt;
+      ltn = MIN(MAX(lt + ldt,ltmin),ltmax);
+      lt1 = lt;
+      lt = ltn;
+      leps1 = leps;
+  
+      nuc_eos_C_linterp_for_temp(lr,lt,ye,&leps,alltables,nrho,ntemp,nye,
+  			       logrho,logtemp,yes,&dlepsdlt);
+  #if DEBUG
+      fprintf(stderr,"findtemp it: %d, err: %15.6E \n", it, fabs((leps-leps0) / leps0));
+  #endif
+  
+      if(fabs(leps-leps0) < prec*fabs(leps0)) {
+        *ltout = lt;
+        return;
+      }
+  
+      // if we are closer than 10^-3  to the
+      // root (eps-eps0)=0, we are switching to
+      // the secant method, since the table is rather coarse and the
+      // derivatives may be garbage.
+      if(fabs(leps-leps0) < 1.0e-3*fabs(leps0)) {
+        dlepsdlt = (leps-leps1)/(lt-lt1);
+      }
+  
+      it++;
     }
-
-    it++;
-  }
-  
-  if (it >= itmax-1) {
-    // try bisection
-  #if DEBUG
-    fprintf(stderr,"trying bisection\n");
-  #endif
-    bisection(lr, lt0, ye, leps0, ltout, 1, prec, keyerrt);
-  #if DEBUG
-    fprintf(stderr,"bisection keyerrt: %d\n",*keyerrt);
-  #endif
-    return;
-  
-    fprintf(stderr,"We should never reach this point! Aborting!\n");
-    abort();
-  }
+    
+    if (it >= itmax-1) {
+      // try bisection
+    #if DEBUG
+      fprintf(stderr,"trying bisection\n");
+    #endif
+      bisection(lr, lt0, ye, leps0, ltout, 1, prec, keyerrt);
+    #if DEBUG
+      fprintf(stderr,"bisection keyerrt: %d\n",*keyerrt);
+    #endif
+      if (*keyerrt == 0) return; 
+    }
+    //prec = prec * 1.2; 
+  //}
+  //fprintf(stderr,"We should never reach this point! Aborting!\n");
+  //abort();
 
 }
 
@@ -460,8 +465,8 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
 
   // prepare
   lt = lt0;
-  lt1 = log10( MIN(pow(10.0,ltmax),(1.005)*(pow(10.0,lt0))) );
-  lt2 = log10( MAX(pow(10.0,ltmin),(0.995)*(pow(10.0,lt0))) );
+  lt1 = log10( MIN(pow(10.0,ltmax),(1.05)*(pow(10.0,lt0))) );
+  lt2 = log10( MAX(pow(10.0,ltmin),(0.95)*(pow(10.0,lt0))) );
 
   int nvars = 3;
   nuc_eos_C_cubinterp_some(lr, lt1, ye, f1a, alltables,
@@ -482,8 +487,8 @@ void bisection(double lr, double lt0, double ye, double leps0, double *ltout,
   
   while(f1*f2 >= 0.0) {
     
-    lt1 = log10( MIN(pow(10.0,ltmax),(1.005)*(pow(10.0,lt1))) );
-    lt2 = log10( MAX(pow(10.0,ltmin),(0.995)*(pow(10.0,lt2))) );
+    lt1 = log10( MIN(pow(10.0,ltmax),(1.05)*(pow(10.0,lt1))) );
+    lt2 = log10( MAX(pow(10.0,ltmin),(0.95)*(pow(10.0,lt2))) );
     nuc_eos_C_cubinterp_some(lr, lt1, ye, f1a, alltables,
 			   ivs_short, nrho, ntemp, nye, nvars,
 			   logrho, logtemp, yes);

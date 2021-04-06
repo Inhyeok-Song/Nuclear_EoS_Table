@@ -42,13 +42,13 @@ int ivs_short[16];
 int main(void) {
 	
    // Read the orginal table
-   nuc_eos_C_ReadTable("../LS220_eps2.h5");
+   nuc_eos_C_ReadTable("../LS220_eps3.h5");
    printf("nrho:  %d\n", nrho);
    printf("neps:  %d\n", neps);
    printf("nye:   %d\n", nye);
    
    // Write the energy-based EOS with one point extrapolation
-   write_eos_table("../LS220_eps2_expol3.h5");
+   write_eos_table("../LS220_eps3_expol3.h5");
  
 	return 0;
 }

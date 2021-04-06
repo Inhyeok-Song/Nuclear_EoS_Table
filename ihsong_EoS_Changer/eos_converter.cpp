@@ -65,7 +65,7 @@ int main(void) {
 
   // set the table size
   nrho2  = nrho;
-  neps2  = 2*ntemp;
+  neps2  = 3*ntemp;
   nye2   = nye;
 
   // double rho_min = 1.E3;
@@ -99,14 +99,14 @@ int main(void) {
   double ye_mode_min   = yes[0];
   double ye_mode_max   = yes[nye-1];
 
-  nmode        = 2*ntemp;
+  nmode        = 3*ntemp;
   nrho_mode    = nrho;
   ntemp_mode   = nmode;
   nentr_mode   = nmode;
   nprss_mode   = nmode;
   nye_mode     = nye;
-  //logrho_mode  = logrho;
-  //yes_mode     = yes;
+  logrho_mode  = logrho;
+  yes_mode     = yes;
   
   // set density, temperature, entropy, pressure and Ye array for
   // temperature, entropy and pressure mode
@@ -121,7 +121,7 @@ int main(void) {
   
   
   // Write the energy-based EOS
-  write_eos_table("../LS220_eps2.h5");
+  write_eos_table("../LS220_eps3.h5");
 
 
   return 0;

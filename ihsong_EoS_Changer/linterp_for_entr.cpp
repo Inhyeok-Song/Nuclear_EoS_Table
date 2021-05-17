@@ -4,9 +4,9 @@
 
 
 void nuc_eos_C_linterp_for_entr(double x, double y, double z,
-				double* f, double* ft,
-				int nx, int ny, int nz,
-				double* xt,double*yt, double* zt,
+				double* f, double* ft, 
+				int nx, int ny, int nz, 
+				double* xt,double*yt, double* zt, 
 				double* dlepsdlt)
 
 {
@@ -38,16 +38,16 @@ void nuc_eos_C_linterp_for_entr(double x, double y, double z,
   double fh[8], delx, dely, delz, a[8];
   double dx,dy,dz,dxi,dyi,dzi,dxyi,dxzi,dyzi,dxyzi;
   int n,ix,iy,iz;
-
+  
   // determine spacing parameters of equidistant (!!!) table
   dx = (xt[nx-1] - xt[0]) / (1.0*(nx-1));
   dy = (yt[ny-1] - yt[0]) / (1.0*(ny-1));
   dz = (zt[nz-1] - zt[0]) / (1.0*(nz-1));
-
+  
   dxi = 1.0 / dx;
   dyi = 1.0 / dy;
   dzi = 1.0 / dz;
-
+  
   dxyi = dxi * dyi;
   dxzi = dxi * dzi;
   dyzi = dyi * dzi;
@@ -81,9 +81,9 @@ void nuc_eos_C_linterp_for_entr(double x, double y, double z,
   idx[6] = NTABLES*(ix + nx*((iy-1) + ny*(iz-1)));
   idx[7] = NTABLES*((ix-1) + nx*((iy-1) + ny*(iz-1)));
 
-
+  
   int iv = 2; // entr
-
+    
   // set up aux vars for interpolation
   // assuming array ordering (iv, ix, iy, iz)
 
@@ -106,7 +106,7 @@ void nuc_eos_C_linterp_for_entr(double x, double y, double z,
   a[4] = dxyi *  ( fh[4] - fh[1] - fh[2] + fh[0] );
   a[5] = dxzi *  ( fh[5] - fh[1] - fh[3] + fh[0] );
   a[6] = dyzi *  ( fh[6] - fh[2] - fh[3] + fh[0] );
-  a[7] = dxyzi * ( fh[7] - fh[0] + fh[1] + fh[2] +
+  a[7] = dxyzi * ( fh[7] - fh[0] + fh[1] + fh[2] + 
 		   fh[3] - fh[4] - fh[5] - fh[6] );
 
   *dlepsdlt = -a[2];
@@ -122,3 +122,4 @@ void nuc_eos_C_linterp_for_entr(double x, double y, double z,
 
   return;
 }
+  

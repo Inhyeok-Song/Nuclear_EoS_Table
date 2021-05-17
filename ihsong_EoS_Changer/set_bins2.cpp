@@ -12,16 +12,16 @@ void set_bins2(int rho_bs, int temp_bs, int entr_bs, int prss_bs, int ye_bs,
   
 
   // set the table for temp, entr modes
-//	if (!(logrho_mode = (double*)malloc(rho_bs * sizeof(double)))) {
-//	  fprintf(stderr, "Cannot allocate memory for logrho_mode\n");
-//		abort();
-//	}
-//  double dlrho = log10(eos_rhomax/eos_rhomin)/(rho_bs-1);
-//	for	(int i = 0; i<rho_bs-1; i++) {
-//		logrho_mode[i] = log10(eos_rhomin) + dlrho*i;
-//	}
-//	logrho_mode[rho_bs-1] = log10(eos_rhomax);
-  
+  if (!(logrho_mode = (double*)malloc(rho_bs * sizeof(double)))) {
+    fprintf(stderr, "Cannot allocate memory for logrho_mode\n");
+  	abort();
+  }
+   double dlrho = log10(eos_rhomax/eos_rhomin)/(rho_bs-1);
+  for	(int i = 0; i<rho_bs-1; i++) {
+  	logrho_mode[i] = log10(eos_rhomin) + dlrho*i;
+  }
+  logrho_mode[rho_bs-1] = log10(eos_rhomax);
+    
 		 
   if (!(logtemp_mode = (double*)malloc(temp_bs * sizeof(double)))) {
 	 fprintf(stderr, "Cannot allocate memory for logtemp_mode\n");
@@ -45,15 +45,15 @@ void set_bins2(int rho_bs, int temp_bs, int entr_bs, int prss_bs, int ye_bs,
   entr_mode[entr_bs-1] = eos_entrmax;
 
 	
-//	if (!(yes_mode = (double*)malloc(ye_bs * sizeof(double)))) {
-//	  fprintf(stderr, "Cannot allocate memory for yes_mode\n");
-//		abort();
-//	}
-//	double dye = (eos_yemax-eos_yemin)/(ye_bs-1);
-//	for	(int i = 0; i<ye_bs-1; i++) {
-//		yes_mode[i] = eos_yemin + dye*i;
-//	}
-//	yes_mode[ye_bs-1] = eos_yemax;
+  if (!(yes_mode = (double*)malloc(ye_bs * sizeof(double)))) {
+    fprintf(stderr, "Cannot allocate memory for yes_mode\n");
+  	abort();
+  }
+  double dye = (eos_yemax-eos_yemin)/(ye_bs-1);
+  for	(int i = 0; i<ye_bs-1; i++) {
+  	yes_mode[i] = eos_yemin + dye*i;
+  }
+  yes_mode[ye_bs-1] = eos_yemax;
 
 	
   if (!(logprss_mode = (double*)malloc(prss_bs * sizeof(double)))) {

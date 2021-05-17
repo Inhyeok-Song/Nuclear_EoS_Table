@@ -59,6 +59,7 @@ void nuc_eos_C_short( double xrho, double *xtemp, double xye,
     }
   }
 
+
   // set up local vars
   double lr = log10(xrho);
   double lt = log10(*xtemp);
@@ -68,7 +69,7 @@ void nuc_eos_C_short( double xrho, double *xtemp, double xye,
   // find temperature if need be
   if (keytemp == 0) {
     double nlt = 0.0;
-    nuc_eos_C_findtemp(lr, lt, xye, leps, &nlt, rfeps, keyerr);
+    nuc_eos_C_findtemp(lr, lt, xye, leps, rfeps, &nlt, keyerr);
     if (*keyerr != 0) return;
     lt = nlt;
     *xtemp = pow(10.0, lt);
@@ -93,10 +94,10 @@ void nuc_eos_C_short( double xrho, double *xtemp, double xye,
 	// linear interpolation
 	//nuc_eos_C_linterp_some(lr, lt, xye, res, alltables, ivs_short, 
  	//		                 nrho, ntemp, nye, 19, logrho, logtemp, yes);
-//
+
 	// cubic interpolation
 	nuc_eos_C_cubinterp_some(lr, lt, xye, res, alltables, ivs_short, 
-						               nrho, ntemp, nye, 19, logrho, logtemp, yes);
+						        nrho, ntemp, nye, 19, logrho, logtemp, yes);
   
   
 	// assign results
@@ -120,10 +121,10 @@ void nuc_eos_C_short( double xrho, double *xtemp, double xye,
   *xmu_e  = res[6];
   *xmu_p  = res[7];
   *xmu_n  = res[8];
-  *xXa	  = res[9];
-  *xXh	  = res[10];
-  *xXn	  = res[11];
-  *xXp	  = res[12];
+  *xXa	 = res[9];
+  *xXh	 = res[10];
+  *xXn	 = res[11];
+  *xXp	 = res[12];
   *xAbar  = res[13];
   *xZbar  = res[14];
   *xgamma = res[15];

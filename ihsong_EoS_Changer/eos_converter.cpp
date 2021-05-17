@@ -64,9 +64,9 @@ int main(void) {
   printf("nye: %d\n", nye);
 
   // set the table size
-  nrho2  = nrho;
+  nrho2  = 1*nrho;
   neps2  = 3*ntemp;
-  nye2   = nye;
+  nye2   = 1*nye;
 
   // double rho_min = 1.E3;
   // double rho_max = 1.E16;
@@ -100,13 +100,13 @@ int main(void) {
   double ye_mode_max   = yes[nye-1];
 
   nmode        = 3*ntemp;
-  nrho_mode    = nrho;
+  nrho_mode    = 1*nrho;
   ntemp_mode   = nmode;
   nentr_mode   = nmode;
   nprss_mode   = nmode;
-  nye_mode     = nye;
-  logrho_mode  = logrho;
-  yes_mode     = yes;
+  nye_mode     = 1*nye;
+  //logrho_mode  = logrho;
+  //yes_mode     = yes;
   
   // set density, temperature, entropy, pressure and Ye array for
   // temperature, entropy and pressure mode

@@ -3,10 +3,10 @@
 #include "nuc_eos.h"
 
 
-void nuc_eos_C_linterp_for_temp(double x, double y, double z,
+void nuc_eos_C_linterp_for_prss(double x, double y, double z,
 				double* f, double* ft, 
 				int nx, int ny, int nz, 
-				double* xt,double*yt, double* zt, 
+				double* xt, double*yt, double* zt, 
 				double* dlepsdlt)
 
 {
@@ -82,7 +82,7 @@ void nuc_eos_C_linterp_for_temp(double x, double y, double z,
   idx[7] = NTABLES*((ix-1) + nx*((iy-1) + ny*(iz-1)));
 
   
-  int iv = 1; // log(eps)
+  int iv = 0; // log(prs)
     
   // set up aux vars for interpolation
   // assuming array ordering (iv, ix, iy, iz)
@@ -122,4 +122,3 @@ void nuc_eos_C_linterp_for_temp(double x, double y, double z,
 
   return;
 }
-  

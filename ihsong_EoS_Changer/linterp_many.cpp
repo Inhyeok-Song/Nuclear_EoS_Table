@@ -3,11 +3,10 @@
 #include "nuc_eos.h"
 
 
-void nuc_eos_C_linterp_for_temp(double x, double y, double z,
-				double* f, double* ft, 
-				int nx, int ny, int nz, 
-				double* xt,double*yt, double* zt, 
-				double* dlepsdlt)
+void nuc_eos_C_linterp_many(double x, double y, double z,
+			    double* f, double* ft, 
+			    int nx, int ny, int nz, int nvars,
+			    double* xt,double*yt, double* zt) 
 
 {
 
@@ -35,7 +34,8 @@ void nuc_eos_C_linterp_for_temp(double x, double y, double z,
 
 
   // helper variables
-  double fh[8], delx, dely, delz, a[8];
+  double d1,d2,d3;
+  double fh[8][nvars], delx, dely, delz, a[8];
   double dx,dy,dz,dxi,dyi,dzi,dxyi,dxzi,dyzi,dxyzi;
   int n,ix,iy,iz;
   
@@ -82,43 +82,41 @@ void nuc_eos_C_linterp_for_temp(double x, double y, double z,
   idx[7] = NTABLES*((ix-1) + nx*((iy-1) + ny*(iz-1)));
 
   
-  int iv = 1; // log(eps)
-    
-  // set up aux vars for interpolation
-  // assuming array ordering (iv, ix, iy, iz)
+  for(int iv=0;iv<nvars;iv++) {
 
-  fh[0] = ft[iv+idx[0]];
-  fh[1] = ft[iv+idx[1]];
-  fh[2] = ft[iv+idx[2]];
-  fh[3] = ft[iv+idx[3]];
-  fh[4] = ft[iv+idx[4]];
-  fh[5] = ft[iv+idx[5]];
-  fh[6] = ft[iv+idx[6]];
-  fh[7] = ft[iv+idx[7]];
+    // set up aux vars for interpolation
+    // assuming array ordering (iv, ix, iy, iz)
 
-  // set up coeffs of interpolation polynomical and
-  // evaluate function values
+    fh[0][iv] = ft[iv+idx[0]];
+    fh[1][iv] = ft[iv+idx[1]];
+    fh[2][iv] = ft[iv+idx[2]];
+    fh[3][iv] = ft[iv+idx[3]];
+    fh[4][iv] = ft[iv+idx[4]];
+    fh[5][iv] = ft[iv+idx[5]];
+    fh[6][iv] = ft[iv+idx[6]];
+    fh[7][iv] = ft[iv+idx[7]];
 
-  a[0] = fh[0];
-  a[1] = dxi *   ( fh[1] - fh[0] );
-  a[2] = dyi *   ( fh[2] - fh[0] );
-  a[3] = dzi *   ( fh[3] - fh[0] );
-  a[4] = dxyi *  ( fh[4] - fh[1] - fh[2] + fh[0] );
-  a[5] = dxzi *  ( fh[5] - fh[1] - fh[3] + fh[0] );
-  a[6] = dyzi *  ( fh[6] - fh[2] - fh[3] + fh[0] );
-  a[7] = dxyzi * ( fh[7] - fh[0] + fh[1] + fh[2] + 
-		   fh[3] - fh[4] - fh[5] - fh[6] );
+    // set up coeffs of interpolation polynomical and
+    // evaluate function values
 
-  *dlepsdlt = -a[2];
+    a[0] = fh[0][iv];
+    a[1] = dxi *   ( fh[1][iv] - fh[0][iv] );
+    a[2] = dyi *   ( fh[2][iv] - fh[0][iv] );
+    a[3] = dzi *   ( fh[3][iv] - fh[0][iv] );
+    a[4] = dxyi *  ( fh[4][iv] - fh[1][iv] - fh[2][iv] + fh[0][iv] );
+    a[5] = dxzi *  ( fh[5][iv] - fh[1][iv] - fh[3][iv] + fh[0][iv] );
+    a[6] = dyzi *  ( fh[6][iv] - fh[2][iv] - fh[3][iv] + fh[0][iv] );
+    a[7] = dxyzi * ( fh[7][iv] - fh[0][iv] + fh[1][iv] + fh[2][iv] + 
+		     fh[3][iv] - fh[4][iv] - fh[5][iv] - fh[6][iv] );
 
-  *f = a[0] + a[1] * delx
-    + a[2] * dely
-    + a[3] * delz
-    + a[4] * delx * dely
-    + a[5] * delx * delz
-    + a[6] * dely * delz
-    + a[7] * delx * dely * delz;
-
+    f[iv] = a[0] + a[1] * delx
+      + a[2] * dely
+      + a[3] * delz
+      + a[4] * delx * dely
+      + a[5] * delx * delz
+      + a[6] * dely * delz
+      + a[7] * delx * dely * delz;
+  }
 
   return;
 }

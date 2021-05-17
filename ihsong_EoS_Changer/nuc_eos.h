@@ -115,14 +115,15 @@ void nuc_eos_C_linterp_for_entr(double x, double y, double z,
         double *xt,double *yt, double *zt,
         double *dlepsdlt);
 
-void nuc_eos_C_linterp_for_prs(double x, double y, double z,
+void nuc_eos_C_linterp_for_prss(double x, double y, double z,
         double *f, double *ft,
         int nx, int ny, int nz,
         double *xt,double *yt, double *zt,
         double *dlepsdlt);
 
+
 void nuc_eos_C_findtemp(double lr, double lt0, double ye, 
-			double lepsin, double *ltout, double prec, int *keyerrt);
+			double lepsin, double prec, double *ltout, int *keyerrt);
 
 void nuc_eos_C_findtemp_entropy(double lr, double lt0, double ye,
       double xs, double *ltout, double prec, int *keyerrt);

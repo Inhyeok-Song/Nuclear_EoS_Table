@@ -1,6 +1,6 @@
 SOURCES=eos_converter.cpp readtable.cpp linterp_some.cpp \
 	cubinterp_some.cpp findtemp.cpp linterp_for_temp.cpp \
-	linterp_for_entr.cpp linterp_for_prs.cpp nuc_eos.cpp	set_bins.cpp \
+	linterp_for_entr.cpp linterp_for_prss.cpp nuc_eos.cpp	set_bins.cpp \
 	set_bins2.cpp write_eos_table.cpp
 INCLUDES=nuc_eos.h
 HDF5DIR=/cluster/software/hdf5-parallel/1.8.21/gcc--8.3.0/openmpi--3.1.4

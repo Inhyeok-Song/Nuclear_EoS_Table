@@ -173,7 +173,7 @@ void write_eos_table( char *nuceos_eps_table_name )
           eos_table[i][j][k][13] = NAN;  // 0.0;
           eos_table[i][j][k][14] = NAN;  // 0.0;
           eos_table[i][j][k][15] = NAN;  // 0.0;
-          xtemp  = pow(10.0, logtemp[5]);
+          xtemp = pow(10.0, logtemp[5]);
         }
       }
     }
@@ -260,7 +260,7 @@ void write_eos_table( char *nuceos_eps_table_name )
         else
         {
           eos_table_mode[i][j][k][2] = NAN;
-          xtemp = pow(10.0, logtemp[1]);
+          xtemp = pow(10.0, logtemp[5]);
         }
       }
     }

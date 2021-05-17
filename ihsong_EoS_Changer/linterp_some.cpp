@@ -4,10 +4,11 @@
 
 
 void nuc_eos_C_linterp_some(double x, double y, double z,
-			    double *f, double *ft, 
-			    int *ivs,
+			    double* f, double* ft, 
+			    int* ivs,
 			    int nx, int ny, int nz, int nvars,
-			    double *xt, double *yt, double *zt) 
+			    double* xt,double*yt, double* zt) 
+
 {
 
 //!
@@ -34,10 +35,10 @@ void nuc_eos_C_linterp_some(double x, double y, double z,
 
 
   // helper variables
-  double d1, d2, d3;
+  double d1,d2,d3;
   double fh[8][nvars], delx, dely, delz, a[8];
-  double dx, dy, dz, dxi, dyi, dzi, dxyi, dxzi, dyzi, dxyzi;
-  int n, ix, iy, iz;
+  double dx,dy,dz,dxi,dyi,dzi,dxyi,dxzi,dyzi,dxyzi;
+  int n,ix,iy,iz;
   
   // determine spacing parameters of equidistant (!!!) table
 #if 1
@@ -67,9 +68,9 @@ void nuc_eos_C_linterp_some(double x, double y, double z,
 
   // determine location in table
 
-  ix = 1 + (int)( (x - xt[0] - 1.0e-20) * dxi );
-  iy = 1 + (int)( (y - yt[0] - 1.0e-20) * dyi );
-  iz = 1 + (int)( (z - zt[0] - 1.0e-20) * dzi );
+  ix = 1 + (int)( (x - xt[0] - 1.0e-10) * dxi );
+  iy = 1 + (int)( (y - yt[0] - 1.0e-10) * dyi );
+  iz = 1 + (int)( (z - zt[0] - 1.0e-10) * dzi );
 
   ix = MAX( 1, MIN( ix, nx-1 ) );
   iy = MAX( 1, MIN( iy, ny-1 ) );
@@ -84,14 +85,13 @@ void nuc_eos_C_linterp_some(double x, double y, double z,
   int idx[8];
 
   idx[0] = NTABLES*(ix + nx*(iy + ny*iz));
-  idx[1] = NTABLES*((ix+1) + nx*(iy + ny*iz));
+  idx[1] = NTABLES*((ix-1) + nx*(iy + ny*iz));
   idx[2] = NTABLES*(ix + nx*((iy-1) + ny*iz));
   idx[3] = NTABLES*(ix + nx*(iy + ny*(iz-1)));
   idx[4] = NTABLES*((ix-1) + nx*((iy-1) + ny*iz));
   idx[5] = NTABLES*((ix-1) + nx*(iy + ny*(iz-1)));
   idx[6] = NTABLES*(ix + nx*((iy-1) + ny*(iz-1)));
   idx[7] = NTABLES*((ix-1) + nx*((iy-1) + ny*(iz-1)));
-
 
   
   for(int iv=0;iv<nvars;iv++) {
@@ -132,4 +132,4 @@ void nuc_eos_C_linterp_some(double x, double y, double z,
 
   return;
 }
-
+  
